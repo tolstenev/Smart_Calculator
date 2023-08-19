@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef SRC_VIEW_MAINWINDOW_H
+#define SRC_VIEW_MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QKeyEvent>
@@ -8,18 +8,22 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class CalculatorWindow : public QMainWindow
-{
+namespace s21 {
+
+    class CalculatorWindow : public QMainWindow {
     Q_OBJECT
 
-public:
-    CalculatorWindow(QWidget *parent = nullptr);
-    ~CalculatorWindow();
+    public:
+        CalculatorWindow(QWidget *parent = nullptr);
 
-    void keyPressEvent(QKeyEvent *event) override;
+        ~CalculatorWindow();
 
+        void keyPressEvent(QKeyEvent *event) override;
 
-private:
-    Ui::MainWindow *ui;
-};
-#endif // MAINWINDOW_H
+    private:
+        Ui::MainWindow *ui_;
+    };  // class CalculatorWindow
+
+}   // namespace s21
+
+#endif // SRC_VIEW_MAINWINDOW_H

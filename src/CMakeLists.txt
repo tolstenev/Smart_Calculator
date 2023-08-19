@@ -19,8 +19,6 @@ set(PROJECT_SOURCES
         src/view/mainwindow.cpp
         src/view/mainwindow.h
         src/view/mainwindow.ui
-        img/icon.icns
-        img/icon.png
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

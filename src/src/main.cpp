@@ -2,10 +2,9 @@
 
 #include <QApplication>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    CalculatorWindow w;
-    w.show();
+    s21::CalculatorWindow cw;
+    cw.show();
     return a.exec();
 }
