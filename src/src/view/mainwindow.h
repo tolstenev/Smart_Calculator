@@ -22,6 +22,10 @@ namespace s21 {
 
     private:
         Ui::MainWindow *ui_;
+        void connectSlots();
+
+    private slots:
+        void typeChars();
     };  // class CalculatorWindow
 
 }   // namespace s21
