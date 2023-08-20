@@ -5,30 +5,35 @@
 #include <QKeyEvent>
 #include <list>
 
+#include "../controller/main_controller.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 namespace s21 {
 
-    class CalculatorWindow : public QMainWindow {
+    class CalcWindow : public QMainWindow {
     Q_OBJECT
 
     public:
-        CalculatorWindow(QWidget *parent = nullptr);
+        CalcWindow(CalcController& controller, QWidget *parent = nullptr);
 
-        ~CalculatorWindow();
+        ~CalcWindow();
 
         void keyPressEvent(QKeyEvent *event) override;
 
     private:
         Ui::MainWindow *ui_;
+        CalcController& controller_;
         void connectSlots();
 
     private slots:
-        void typeChars();
+        void printSymbols();
         void clearLine();
         void deleteLastSymbol();
+        void calculate();
+
     };  // class CalculatorWindow
 
 }   // namespace s21
