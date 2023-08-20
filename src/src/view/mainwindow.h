@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QKeyEvent>
+#include <list>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,8 +27,12 @@ namespace s21 {
 
     private slots:
         void typeChars();
+        void clearLine();
+        void deleteLastSymbol();
     };  // class CalculatorWindow
 
 }   // namespace s21
+
+
 
 #endif // SRC_VIEW_MAINWINDOW_H
