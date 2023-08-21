@@ -31,7 +31,7 @@ namespace s21 {
 
     private slots:
         void printSymbols();
-        void clearLine();
+        void clearLines();
         void deleteLastSymbol();
         void calculate();
 

@@ -3,15 +3,21 @@
 
 #include <map>
 #include <string>
+#include "../rcs/exprtk.hpp"
 
 namespace s21 {
     class CalcModel {
     public:
         CalcModel();
 
-        std::string getResult() { return expr_; }
+//        std::string getResult() { return expr_; }
+        std::string getResult() { return std::to_string(result_); }
+
 
         void setExpression(const std::string &expr);
+
+        void validateExpression();
+
 
     private:
         enum class Lexem : int {

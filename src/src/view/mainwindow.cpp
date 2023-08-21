@@ -65,13 +65,14 @@ void s21::CalcWindow::connectSlots() {
         connect(button, SIGNAL(clicked()), this, SLOT(printSymbols()));
     }
 
-    connect(ui_->button_ac, SIGNAL(clicked()), this, SLOT(clearLine()));
+    connect(ui_->button_ac, SIGNAL(clicked()), this, SLOT(clearLines()));
     connect(ui_->button_bs, SIGNAL(clicked()), this, SLOT(deleteLastSymbol()));
     connect(ui_->button_calculate, SIGNAL(clicked()), this, SLOT(calculate()));
 }
 
-void s21::CalcWindow::clearLine() {
+void s21::CalcWindow::clearLines() {
     ui_->line_expr->setText("");
+    ui_->line_res->setText("");
 }
 
 void s21::CalcWindow::deleteLastSymbol() {
@@ -84,7 +85,7 @@ void s21::CalcWindow::calculate() {
     std::string expression = ui_->line_expr->text().toStdString();
 //    std::string x_value = ui_->double_spin_box_x->text().toStdString();
     controller_.setExpression(expression);
-//    controller_.validateExpression();
+    controller_.validateExpression();
 //    controller_.calculateExpression();
 
     expression = controller_.getResult();
