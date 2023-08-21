@@ -2,24 +2,48 @@
 #define SRC_MODEL_MAIN_MODEL_H_
 
 #include <map>
+#include <string>
 
 namespace s21 {
     class CalcModel {
     public:
-        std::string getResult() { return expr_; }
+        CalcModel();
 
-        double getResultD() { return result_; }
+        std::string getResult() { return expr_; }
 
         void setExpression(const std::string &expr);
 
-        void validateExpression();
-
-        void calculateExpression();
-
     private:
-
+        enum class Lexem : int {
+            sin = 1,
+            cos,
+            tan,
+            a_sin,
+            a_cos,
+            a_tan,
+            sqrt,
+            log,
+            log10,
+            br_open,
+            br_close,
+            deg,
+            mul,
+            div,
+            sum,
+            sub,
+            mod,
+            unary,
+            num,
+            num_x
+        };
         std::string expr_{};
         double result_{};
+
+        std::map<std::string, Lexem> functions_;
+        std::map<char, Lexem> operators_;
+        std::map<Lexem, int> priorities_;
+
+        void mapsObjectsInit();
 
     };  // class CalcModel
 }  // namespace s21

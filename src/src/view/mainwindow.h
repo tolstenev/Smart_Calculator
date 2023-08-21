@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <list>
+#include <string>
 
 #include "../controller/main_controller.h"
 

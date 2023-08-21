@@ -10,10 +10,6 @@ namespace s21 {
 
         void setExpression(const std::string &expr) { model_.setExpression(expr); }
 
-        void validateExpression() { model_.validateExpression(); }
-
-        void calculateExpression() { model_.calculateExpression(); }
-
         std::string getResult() { return model_.getResult(); }
 
     private:
