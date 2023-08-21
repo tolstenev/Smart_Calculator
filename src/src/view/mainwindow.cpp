@@ -82,12 +82,11 @@ void s21::CalcWindow::deleteLastSymbol() {
 }
 
 void s21::CalcWindow::calculate() {
-    std::string expression = ui_->line_expr->text().toStdString();
-//    std::string x_value = ui_->double_spin_box_x->text().toStdString();
-    controller_.setExpression(expression);
+    controller_.setExpression(ui_->line_expr->text().toStdString());
+    controller_.setXvalue(ui_->double_spin_box_x->value());
     controller_.validateExpression();
 //    controller_.calculateExpression();
 
-    expression = controller_.getResult();
-    ui_->line_res->setText(QString::fromStdString(expression));
+    std::string result = controller_.getResult();
+    ui_->line_res->setText(QString::fromStdString(result));
 }

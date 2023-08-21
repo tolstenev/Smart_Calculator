@@ -49,7 +49,9 @@ void s21::CalcModel::validateExpression() {
         exprtk::expression<double> expression;
         exprtk::parser<double> parser;
         symbol_table.add_constants();
+        symbol_table.add_variable("X", x_value_);
         expression.register_symbol_table(symbol_table);
+        substituteExpression();  // "log" -> "log10", "ln" -> "log", "mod" -> "%", "E" -> "*10"
         parser.compile(expr_, expression);
 
 //        Don't forget to reduce it
@@ -57,5 +59,20 @@ void s21::CalcModel::validateExpression() {
 
     } catch (...) {
         expr_ ="Uncorrect expression" ;
+    }
+}
+
+void s21::CalcModel::substituteExpression() {
+    replaceInExpression("log", "log10");
+    replaceInExpression("ln", "log");
+    replaceInExpression("mod", "%");
+    replaceInExpression("E", "*10^");
+}
+
+void s21::CalcModel::replaceInExpression(const std::string& from, const std::string& to) {
+    size_t startPos = 0;
+    while ((startPos = expr_.find(from, startPos)) != std::string::npos) {
+        expr_.replace(startPos, from.length(), to);
+        startPos += to.length();
     }
 }

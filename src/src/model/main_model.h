@@ -13,8 +13,9 @@ namespace s21 {
 //        std::string getResult() { return expr_; }
         std::string getResult() { return std::to_string(result_); }
 
-
         void setExpression(const std::string &expr);
+
+        void setXvalue(double x) { x_value_ = x; };
 
         void validateExpression();
 
@@ -43,6 +44,7 @@ namespace s21 {
             num_x
         };
         std::string expr_{};
+        double x_value_{};
         double result_{};
 
         std::map<std::string, Lexem> functions_;
@@ -50,6 +52,8 @@ namespace s21 {
         std::map<Lexem, int> priorities_;
 
         void mapsObjectsInit();
+        void substituteExpression();
+        void replaceInExpression(const std::string& from, const std::string& to);
 
     };  // class CalcModel
 }  // namespace s21
