@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QKeyEvent>
+#include <QShortcut>
 #include <list>
 #include <string>
 

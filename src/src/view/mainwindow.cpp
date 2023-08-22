@@ -30,6 +30,8 @@ void s21::CalcWindow::printSymbols() {
 }
 
 void s21::CalcWindow::connectSlots() {
+    QShortcut *sc_enter = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    QShortcut *sc_equal = new QShortcut(QKeySequence(Qt::Key_Equal), this);
     std::list<QPushButton *> entering_buttons = {ui_->button_0,
                                                  ui_->button_1,
                                                  ui_->button_2,
@@ -68,6 +70,9 @@ void s21::CalcWindow::connectSlots() {
     connect(ui_->button_ac, SIGNAL(clicked()), this, SLOT(clearLines()));
     connect(ui_->button_bs, SIGNAL(clicked()), this, SLOT(deleteLastSymbol()));
     connect(ui_->button_calculate, SIGNAL(clicked()), this, SLOT(calculate()));
+    connect(sc_enter, SIGNAL(activated()), this, SLOT(calculate()));
+    connect(sc_equal, SIGNAL(activated()), this, SLOT(calculate()));
+
 }
 
 void s21::CalcWindow::clearLines() {
@@ -85,6 +90,7 @@ void s21::CalcWindow::calculate() {
     controller_.setExpression(ui_->line_expr->text().toStdString());
     controller_.setXvalue(ui_->double_spin_box_x->value());
     controller_.validateExpression();
+    controller_.convertExpressionToPostfix();
 //    controller_.calculateExpression();
 
     std::string result = controller_.getResult();

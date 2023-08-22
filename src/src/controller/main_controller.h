@@ -14,6 +14,10 @@ namespace s21 {
 
         void validateExpression() { model_.validateExpression(); }
 
+        void convertExpressionToPostfix() { model_.convertExpressionToPostfix(); }
+
+//        void calculateExpression( model_.calculateExpression(); );
+
         std::string getResult() { return model_.getResult(); }
 
     private:
