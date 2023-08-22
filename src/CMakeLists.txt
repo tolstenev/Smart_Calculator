@@ -15,12 +15,12 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        src/main.cpp
-        src/view/mainwindow.cpp
+        src/main.cc
+        src/view/mainwindow.cc
         src/view/mainwindow.h
         src/view/mainwindow.ui
         src/controller/main_controller.h
-        src/model/main_model.cpp
+        src/model/main_model.cc
         src/model/main_model.h
 )
 
