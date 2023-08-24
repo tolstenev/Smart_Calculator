@@ -1,8 +1,13 @@
 #ifndef SRC_MODEL_MAIN_MODEL_H_
 #define SRC_MODEL_MAIN_MODEL_H_
 
+#include <sstream>
+
+
 #include <map>
 #include <string>
+#include <functional>
+#include <iostream>
 #include "../rcs/exprtk.hpp"
 
 namespace s21 {
@@ -10,7 +15,6 @@ namespace s21 {
     public:
         CalcModel();
 
-//        std::string getResult() { return expr_; }
         std::string getResult() { return std::to_string(result_); }
 
         void setExpression(const std::string &expr) { expr_ = expr; };
@@ -21,31 +25,32 @@ namespace s21 {
 
         void convertExpressionToPostfix();
 
-//        void calculateExpression();
+        void calculateExpression();
 
     private:
         enum class Lexem : int {
             sin = 1,
             cos,
             tan,
-            a_sin,
-            a_cos,
-            a_tan,
+            aSin,
+            aCos,
+            aTan,
             sqrt,
             log,
             log10,
-            br_open,
-            br_close,
+            brOpen,
+            brClose,
             deg,
             mul,
             div,
             sum,
             sub,
             mod,
-            unary,
+            unaryMinus,
             num,
             num_x
         };
+
 
         enum class LType : int {
             num,
@@ -55,17 +60,19 @@ namespace s21 {
 
         class Token {
         public:
+            Token() = default;
+
             Token(LType type, Lexem name)
                     : type_(type), name_(name), value_{} {}
 
             Token(LType type, Lexem name, double value)
                     : type_(type), name_(name), value_(value) {}
 
-            LType getLexemType() const { return type_; }
+            LType getType() const { return type_; }
 
-            Lexem getLexemName() const { return name_; }
+            Lexem getName() const { return name_; }
 
-            double getLexemValue() const { return value_; }
+            double getValue() const { return value_; }
 
         private:
             LType type_{};
@@ -75,17 +82,20 @@ namespace s21 {
 
 
         std::string expr_{};
+        std::string result_string_{};
         double x_value_{};
         double result_{};
-
+        std::vector<Token> postfix_{};
         std::map<std::string, Lexem> functions_;
         std::map<char, Lexem> operators_;
+        std::map<Lexem, std::function<double(const double &)>> unary_operations_;
         std::map<Lexem, int> priorities_;
-        std::vector<Token> postfix_vector_{};
 
-        void initFunctions();
+        void initUnaryLexems();
 
-        void initOperators();
+        void initBinaryLexems();
+
+        void initBinaryOperations();
 
         void initPriorities();
 
@@ -99,7 +109,7 @@ namespace s21 {
 
         Lexem charToLexem(const char &oper);
 
-        void handleUnaryOperator(size_t &index, std::stack<Token> &operators, bool &unary_ind);
+        void handleUnaryOperator(size_t &index, std::stack<Token> &operators);
 
         void handleVariable(size_t &index, bool &unary_ind);
 
@@ -126,6 +136,22 @@ namespace s21 {
         bool isNumeric(size_t index) const;
 
         void stackToVector(std::stack<Token> &operators);
+
+        void calculatePostfix();
+
+        bool isX(const Token &token);
+
+        bool isNumber(const Token &token);
+
+        bool isFunction(const Token &token);
+
+        bool isOperation(const Token &token);
+
+        void handleNumber(const Token &token, std::stack<double> &numbers);
+
+        void handleFunction(const Token &token, std::stack<double> &numbers);
+
+        void handleOperation(const Token &token, std::stack<double> &numbers);
 
     };  // class CalcModel
 }  // namespace s21
