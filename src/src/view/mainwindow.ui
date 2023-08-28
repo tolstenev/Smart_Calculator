@@ -145,7 +145,7 @@
         <string>log(</string>
        </property>
        <property name="shortcut">
-        <string>L</string>
+        <string>L, L</string>
        </property>
       </widget>
      </item>
@@ -617,7 +617,7 @@
         <string>sqrt(</string>
        </property>
        <property name="shortcut">
-        <string>S, Q</string>
+        <string>Q</string>
        </property>
       </widget>
      </item>
@@ -696,7 +696,7 @@
       <x>10</x>
       <y>390</y>
       <width>391</width>
-      <height>271</height>
+      <height>284</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
@@ -872,19 +872,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1" rowspan="5" colspan="3">
-      <widget class="QPushButton" name="pushButton_36">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>moc_plot</string>
-       </property>
-      </widget>
-     </item>
      <item row="5" column="1">
       <widget class="QLabel" name="label_min_horizontal">
        <property name="sizePolicy">
@@ -972,6 +959,9 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="0" column="1" rowspan="5" colspan="3">
+      <widget class="QGraphicsView" name="graphicsView"/>
      </item>
     </layout>
    </widget>

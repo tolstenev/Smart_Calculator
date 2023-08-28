@@ -15,28 +15,28 @@ QT_END_NAMESPACE
 
 namespace s21 {
 
-    class CalcWindow : public QMainWindow {
-    Q_OBJECT
+class CalcWindow : public QMainWindow {
+ Q_OBJECT
 
-    public:
-        CalcWindow(CalcController& controller, QWidget *parent = nullptr);
+ public:
+  CalcWindow(CalcController &controller, QWidget *parent = nullptr);
 
-        ~CalcWindow();
+  ~CalcWindow();
 
-        void keyPressEvent(QKeyEvent *event) override;
+  void keyPressEvent(QKeyEvent *event) override;
 
-    private:
-        Ui::MainWindow *ui_;
-        CalcController& controller_;
-        void connectSlots();
+ private:
+  Ui::MainWindow *ui_;
+  CalcController &controller_;
+  void connectSlots();
 
-    private slots:
-        void printSymbols();
-        void clearLines();
-        void deleteLastSymbol();
-        void calculate();
+ private slots:
+  void printSymbols();
+  void clearLines();
+  void deleteLastSymbol();
+  void calculate();
 
-    };  // class CalculatorWindow
+};  // class CalculatorWindow
 
 }   // namespace s21
 
