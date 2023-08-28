@@ -2,11 +2,10 @@
 #define SRC_MODEL_MAIN_MODEL_H_
 
 #include <sstream>
-
-
 #include <map>
+#include <queue>
+#include <unordered_map>
 #include <string>
-#include <functional>
 #include <iostream>
 #include "../rcs/exprtk.hpp"
 
@@ -15,42 +14,19 @@ namespace s21 {
     public:
         CalcModel();
 
-        std::string getResult() { return std::to_string(result_); }
-
-        void setExpression(const std::string &expr) { expr_ = expr; };
-
         void setXvalue(double x) { x_value_ = x; };
 
-        void validateExpression();
-
-        void convertExpressionToPostfix();
-
-        void calculateExpression();
+        std::string getResult(const std::string &expression);
 
     private:
         enum class Lexem : int {
-            sin = 1,
-            cos,
-            tan,
-            aSin,
-            aCos,
-            aTan,
-            sqrt,
-            log,
-            log10,
-            brOpen,
-            brClose,
-            deg,
-            mul,
-            div,
-            sum,
-            sub,
-            mod,
-            unaryMinus,
-            num,
-            num_x
+            sin = 1, cos, tan,
+            aSin, aCos, aTan,
+            sqrt, log, log10,
+            deg, mul, div, sum, sub, mod,
+            unaryMinus, brOpen,
+            num, num_x
         };
-
 
         enum class LType : int {
             num,
@@ -80,22 +56,29 @@ namespace s21 {
             double value_{};
         };  // class Token
 
+//  bool is_unary into private section
 
         std::string expr_{};
-        std::string result_string_{};
+        std::string result_string_ = "Error";
         double x_value_{};
         double result_{};
         std::vector<Token> postfix_{};
-        std::map<std::string, Lexem> functions_;
-        std::map<char, Lexem> operators_;
-        std::map<Lexem, std::function<double(const double &)>> unary_operations_;
-        std::map<Lexem, int> priorities_;
+        std::unordered_map<std::string, Lexem> functions_;
+        std::unordered_map<char, Lexem> operators_;
+        std::unordered_map<Lexem, int> priorities_;
 
-        void initUnaryLexems();
 
-        void initBinaryLexems();
+        void setExpression(const std::string &expr) { expr_ = expr; };
 
-        void initBinaryOperations();
+        bool isExpressionValid();
+
+        void convertExpressionToPostfix();
+
+        void calculateExpression();
+
+        void initFunctions();
+
+        void initOperators();
 
         void initPriorities();
 
@@ -109,8 +92,6 @@ namespace s21 {
 
         Lexem charToLexem(const char &oper);
 
-        void handleUnaryOperator(size_t &index, std::stack<Token> &operators);
-
         void handleVariable(size_t &index, bool &unary_ind);
 
         void handleFunction(int func_type, std::stack<Token> &operators, bool &is_unary);
@@ -123,11 +104,9 @@ namespace s21 {
 
         void handleOperator(size_t &index, std::stack<Token> &operators, bool &unary_ind);
 
-        bool isUnaryOperator(size_t index, bool &is_unary) const;
-
         bool isVariable(size_t index) const;
 
-        int isFunction(size_t &index) const;
+        int isFunction(size_t &index, bool is_unary);
 
         bool isOpeningBrace(size_t index) const;
 
@@ -152,6 +131,16 @@ namespace s21 {
         void handleFunction(const Token &token, std::stack<double> &numbers);
 
         void handleOperation(const Token &token, std::stack<double> &numbers);
+
+        void convertResultToString();
+
+        bool isResultError() const;
+
+        void formatResultString();
+
+        void setAccuracy();
+
+        void trimTrailingZeros();
 
     };  // class CalcModel
 }  // namespace s21

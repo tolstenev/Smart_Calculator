@@ -87,6 +87,7 @@ void s21::CalcWindow::deleteLastSymbol() {
 }
 
 void s21::CalcWindow::calculate() {
+    controller_.setXvalue(ui_->double_spin_box_x->value());
     std::string expression = ui_->line_expr->text().toStdString();
     std::string result = controller_.calculateExpression(expression);
     ui_->line_res->setText(QString::fromStdString(result));

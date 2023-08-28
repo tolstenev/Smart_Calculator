@@ -1,13 +1,28 @@
 #include "main_model.h"
 
+std::string s21::CalcModel::getResult(const std::string &expression) {
+    try {
+        setExpression(expression);
+        if (isExpressionValid()) {
+            convertExpressionToPostfix();
+            calculateExpression();
+        }
+        return result_string_;
+    } catch (...) {
+        return "Error";
+    }
+}
+
 s21::CalcModel::CalcModel() {
-    initUnaryLexems();
-    initBinaryLexems();
+    initFunctions();
+    initOperators();
     initPriorities();
 }
 
-void s21::CalcModel::initUnaryLexems() {
+void s21::CalcModel::initFunctions() {
     functions_ = {
+            {"X",     Lexem::num_x},
+            {"-",     Lexem::unaryMinus},
             {"sin",   Lexem::sin},
             {"cos",   Lexem::cos},
             {"tan",   Lexem::tan},
@@ -19,7 +34,7 @@ void s21::CalcModel::initUnaryLexems() {
             {"log10", Lexem::log10}};
 }
 
-void s21::CalcModel::initBinaryLexems() {
+void s21::CalcModel::initOperators() {
     operators_ = {
             {'^', Lexem::deg},
             {'*', Lexem::mul},
@@ -49,7 +64,8 @@ void s21::CalcModel::initPriorities() {
             {Lexem::sub,        4}};
 }
 
-void s21::CalcModel::validateExpression() {
+bool s21::CalcModel::isExpressionValid() {
+    bool valid = false;
     exprtk::symbol_table<double> symbol_table;
     exprtk::expression<double> expression;
     exprtk::parser<double> parser;
@@ -57,7 +73,10 @@ void s21::CalcModel::validateExpression() {
     symbol_table.add_variable("X", x_value_);
     expression.register_symbol_table(symbol_table);
     substituteExpression();  // "log" -> "log10", "ln" -> "log", "mod" -> "%", "E" -> "*10^"
-    parser.compile(expr_, expression);
+    if (parser.compile(expr_, expression)) {
+        valid = true;
+    };
+    return valid;
 }
 
 void s21::CalcModel::substituteExpression() {
@@ -68,10 +87,10 @@ void s21::CalcModel::substituteExpression() {
 }
 
 void s21::CalcModel::replaceInExpression(const std::string &from, const std::string &to) {
-    size_t startIndex = 0;
-    while ((startIndex = expr_.find(from, startIndex)) != std::string::npos) {
-        expr_.replace(startIndex, from.length(), to);
-        startIndex += to.length();
+    size_t start_index = 0;
+    while ((start_index = expr_.find(from, start_index)) != std::string::npos) {
+        expr_.replace(start_index, from.length(), to);
+        start_index += to.length();
     }
 }
 
@@ -87,7 +106,39 @@ void s21::CalcModel::calculateExpression() {
     if (!postfix_.empty()) {
         calculatePostfix();
     }
-//    convertResultToString();
+    convertResultToString();
+}
+
+void s21::CalcModel::convertResultToString() {
+    if (isResultError()) {
+        result_string_ = "Error";
+    } else {
+        formatResultString();
+    }
+}
+
+bool s21::CalcModel::isResultError() const {
+    return std::isinf(result_) || std::isnan(result_);
+}
+
+void s21::CalcModel::formatResultString() {
+    setAccuracy();
+    trimTrailingZeros();
+}
+
+void s21::CalcModel::setAccuracy() {
+    std::ostringstream stream;
+    stream.precision(8);
+    stream << std::fixed << result_;
+    result_string_ = stream.str();
+}
+
+void s21::CalcModel::trimTrailingZeros() {
+    size_t iter = result_string_.find_last_not_of('0');
+    if (result_string_[iter] == '.') {
+        --iter;
+    }
+    result_string_ = result_string_.substr(0, ++iter);
 }
 
 int s21::CalcModel::getPriority(const Lexem &lexem) {
@@ -102,13 +153,11 @@ void s21::CalcModel::convertExpressionToPostfix() {
     size_t expression_length = expr_.length();
     postfix_.clear();
     while (index < expression_length) {
-        if (isUnaryOperator(index, is_unary)) {
-            handleUnaryOperator(index, operators);
-        } else if (isNumeric(index)) {
+        if (isNumeric(index)) {
             handleNumeric(index, is_unary);
         } else if (isVariable(index)) {
             handleVariable(index, is_unary);
-        } else if ((which = isFunction(index))) {
+        } else if ((which = isFunction(index, is_unary))) {
             handleFunction(which, operators, is_unary);
         } else if (isOpeningBrace(index)) {
             handleOpeningBrace(index, operators, is_unary);
@@ -123,25 +172,26 @@ void s21::CalcModel::convertExpressionToPostfix() {
     }
 }
 
-bool s21::CalcModel::isUnaryOperator(size_t index, bool &is_unary) const {
-    return is_unary && (expr_[index] == '-' || expr_[index] == '+');
-}
-
 bool s21::CalcModel::isVariable(size_t index) const {
-    return expr_[index] == 'x';
+    return expr_[index] == 'X';
 }
 
-int s21::CalcModel::isFunction(size_t &index) const {
-    if (index + 4 < expr_.length() && expr_.substr(index, index + 5) == "log10") {
+int s21::CalcModel::isFunction(size_t &index, bool is_unary) {
+    if (index + 4 < expr_.length() && expr_.substr(index, 5) == "log10") {
         index += 5;
         return static_cast<int>(Lexem::log10);
     }
     for (const auto &function: functions_) {
         const std::string &func_str = function.first;
         if (index + func_str.length() <= expr_.length()) {
-            if (expr_.substr(index, func_str.length()) == func_str) {
-                index += func_str.length();
-                return static_cast<int>(function.second);
+            std::string func_candidate = expr_.substr(index, func_str.length());
+            if (func_candidate == func_str) {
+                if (!is_unary && (func_candidate == "-")) {
+                    break;
+                } else {
+                    index += func_str.length();
+                    return static_cast<int>(function.second);
+                }
             }
         }
     }
@@ -158,13 +208,6 @@ bool s21::CalcModel::isClosingBrace(size_t index) const {
 
 bool s21::CalcModel::isNumeric(size_t index) const {
     return std::isdigit(expr_[index]) || expr_[index] == '.';
-}
-
-void s21::CalcModel::handleUnaryOperator(size_t &index, std::stack<Token> &operators) {
-    if (expr_[index] == '-') {
-        operators.emplace(LType::op, Lexem::unaryMinus);
-    }
-    ++index;
 }
 
 void s21::CalcModel::handleVariable(size_t &index, bool &is_unary) {
@@ -245,45 +288,49 @@ void s21::CalcModel::calculatePostfix() {
     if (numbers.size() == 1) {
         result_ = numbers.top();
     } else {
-        throw std::runtime_error("Calculation fail");
+        // Calculation error. Set NaN to result_ that will be handle in isResultError()
+        result_ = std::numeric_limits<double>::quiet_NaN();
     }
 }
 
-bool s21::CalcModel::isNumber(const Token& token) {
+bool s21::CalcModel::isNumber(const Token &token) {
     return token.getType() == LType::num;
 }
 
-bool s21::CalcModel::isFunction(const Token& token) {
+bool s21::CalcModel::isFunction(const Token &token) {
     return token.getType() == LType::func;
 }
 
-bool s21::CalcModel::isOperation(const Token& token) {
+bool s21::CalcModel::isOperation(const Token &token) {
     return token.getType() == LType::op;
 }
 
-void s21::CalcModel::handleNumber(const Token& token, std::stack<double> &numbers) {
+void s21::CalcModel::handleNumber(const Token &token, std::stack<double> &numbers) {
     isX(token) ? numbers.push(x_value_)
                : numbers.push(token.getValue());
 }
 
-bool s21::CalcModel::isX(const Token& token) {
+bool s21::CalcModel::isX(const Token &token) {
     return token.getName() == Lexem::num_x;
 }
 
-void s21::CalcModel::handleFunction(const Token& token, std::stack<double> &numbers) {
+void s21::CalcModel::handleFunction(const Token &token, std::stack<double> &numbers) {
     double num = numbers.top();
     numbers.pop();
 
     double result;
     switch (token.getName()) {
+        case Lexem::unaryMinus:
+            result = -1 * num;
+            break;
         case Lexem::sqrt:
             result = std::sqrt(num);
             break;
-        case Lexem::log:
-            result = std::log(num);
-            break;
         case Lexem::log10:
             result = std::log10(num);
+            break;
+        case Lexem::log:
+            result = std::log(num);
             break;
         case Lexem::sin:
             result = std::sin(num);
@@ -304,42 +351,40 @@ void s21::CalcModel::handleFunction(const Token& token, std::stack<double> &numb
             result = std::atan(num);
             break;
     }
-
     numbers.push(result);
 }
 
-void s21::CalcModel::handleOperation(const Token& token, std::stack<double> &numbers) {
+void s21::CalcModel::handleOperation(const Token &token, std::stack<double> &numbers) {
     if (numbers.size() < 2) {
-        throw std::runtime_error("Calculation fail");
+        // Calculation error. Set NaN to result_ that will be handle in isResultError()
+        result_ = std::numeric_limits<double>::quiet_NaN();
+    } else {
+        double rhs = numbers.top();
+        numbers.pop();
+        double lhs = numbers.top();
+        numbers.pop();
+
+        double result;
+        switch (token.getName()) {
+            case Lexem::sum:
+                result = lhs + rhs;
+                break;
+            case Lexem::sub:
+                result = lhs - rhs;
+                break;
+            case Lexem::mul:
+                result = lhs * rhs;
+                break;
+            case Lexem::div:
+                result = lhs / rhs;
+                break;
+            case Lexem::mod:
+                result = std::fmod(lhs, rhs);
+                break;
+            default:  // Lexem::deg
+                result = std::pow(lhs, rhs);
+                break;
+        }
+        numbers.push(result);
     }
-
-    double rhs = numbers.top();
-    numbers.pop();
-
-    double lhs = numbers.top();
-    numbers.pop();
-
-    double result;
-    switch (token.getName()) {
-        case Lexem::sum:
-            result = lhs + rhs;
-            break;
-        case Lexem::sub:
-            result = lhs - rhs;
-            break;
-        case Lexem::mul:
-            result = lhs * rhs;
-            break;
-        case Lexem::div:
-            result = lhs / rhs;
-            break;
-        case Lexem::mod:
-            result = std::fmod(lhs, rhs);
-            break;
-        default:  // Lexem::deg
-            result = std::pow(lhs, rhs);
-            break;
-    }
-
-    numbers.push(result);
 }

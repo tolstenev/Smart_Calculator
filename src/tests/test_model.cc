@@ -8,12 +8,6 @@ using namespace s21;
 
 class CalcTest : public testing::Test {
 protected:
-    void calculate(std::string &expr) {
-        calc_.setExpression(expr);
-        calc_.validateExpression();
-        calc_.convertExpressionToPostfix();
-        calc_.calculateExpression();
-    }
     CalcModel calc_;
     std::string error_ = "Error";
     std::string err_div_zero_ = "1/0";
@@ -62,58 +56,47 @@ protected:
 };
 
 TEST_F(CalcTest, DivByZero) {
-    calculate(err_div_zero_);
-    EXPECT_EQ(calc_.getResult(), error_);
+    EXPECT_EQ(calc_.getResult(err_div_zero_), error_);
 }
 
 TEST_F(CalcTest, sqrtOpp) {
-    calculate(err_sqrt_oppos_);
-    EXPECT_EQ(calc_.getResult(), error_);
+    EXPECT_EQ(calc_.getResult(err_sqrt_oppos_), error_);
 }
 
 TEST_F(CalcTest, invExpr) {
-    calculate(err_abracadabra_);
-    EXPECT_EQ(calc_.getResult(), error_);
+    EXPECT_EQ(calc_.getResult(err_abracadabra_), error_);
 }
 
 TEST_F(CalcTest, SimpleLog) {
-    calculate(simple_log_);
-    EXPECT_EQ(calc_.getResult(), simple_log_res_);
+    EXPECT_EQ(calc_.getResult(simple_log_), simple_log_res_);
 }
 
 TEST_F(CalcTest, Multifold) {
-    calculate(multifold_);
-    EXPECT_EQ(calc_.getResult(), multifold_res_);
+    EXPECT_EQ(calc_.getResult(multifold_), multifold_res_);
 }
 
 TEST_F(CalcTest, Functions) {
-    calculate(functions_t_);
-    EXPECT_EQ(calc_.getResult(), functions_res_);
+    EXPECT_EQ(calc_.getResult(functions_t_), functions_res_);
 }
 
 TEST_F(CalcTest, Folded_funcs) {
-    calculate(folded_funcs_);
-    EXPECT_EQ(calc_.getResult(), folded_funcs_res_);
+    EXPECT_EQ(calc_.getResult(folded_funcs_), folded_funcs_res_);
 }
 
 TEST_F(CalcTest, Exp_notation) {
-    calculate(exp_notation_);
-    EXPECT_EQ(calc_.getResult(), exp_notation_res_);
+    EXPECT_EQ(calc_.getResult(exp_notation_), exp_notation_res_);
 }
 
 TEST_F(CalcTest, expNSimple) {
-    calculate(exp_not_simple_);
-    EXPECT_EQ(calc_.getResult(), exp_not_simple_res_);
+    EXPECT_EQ(calc_.getResult(exp_not_simple_), exp_not_simple_res_);
 }
 
 TEST_F(CalcTest, degreeHard) {
-    calculate(degree_hard_);
-    EXPECT_EQ(calc_.getResult(), degree_hard_res_);
+    EXPECT_EQ(calc_.getResult(degree_hard_), degree_hard_res_);
 }
 
 TEST_F(CalcTest, degreeFuncs) {
-    calculate(degree_funcs);
-    EXPECT_EQ(calc_.getResult(), degree_funcs_res);
+    EXPECT_EQ(calc_.getResult(degree_funcs), degree_funcs_res);
 }
 
 //TEST_F(CalcTest, xStrEnable) {
@@ -138,35 +121,8 @@ TEST_F(CalcTest, degreeFuncs) {
 //}
 
 TEST_F(CalcTest, modTest) {
-    calculate(mod_);
-    EXPECT_EQ(calc_.getResult(), mod_res_);
+    EXPECT_EQ(calc_.getResult(mod_), mod_res_);
 }
-
-TEST_F(CalcTest, failUnknownLex) {
-    calc_.setExpression(fail_lexem_);
-    calc_.convertExpressionToPostfix();
-    calc_.calculateExpression();
-    EXPECT_EQ(calc_.getResult(), error_);
-}
-
-//TEST_F(CalcTest, failEmptyXLex) {
-//    calc_.setExpr(degree_hard_);
-//    calc_.setXValue("");
-//    calc_.validateExpr();
-//    calc_.convertExpr();
-//    calc_.calculateExpr();
-//    EXPECT_EQ(calc_.getResult(), degree_hard_res_);
-//}
-
-//TEST_F(CalcTest, failXValue) {
-//    calc_.setExpr(fail_x_lexem_expr_);
-//    calc_.validateExpr();
-//    calc_.convertExpr();
-//    calc_.setXValue(fail_x_lexem_);
-//    calc_.calculateExpr();
-//    EXPECT_EQ(calc_.getStatus().first, 10);
-//    EXPECT_EQ(calc_.getResult(), error_);
-//}
 
 //TEST_F(CalcTest, graphTest) {
 //    calc_.setExpr(graph_func_);
