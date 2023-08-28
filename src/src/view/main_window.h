@@ -1,8 +1,8 @@
 #ifndef SRC_VIEW_MAINWINDOW_H
 #define SRC_VIEW_MAINWINDOW_H
 
-#include <QMainWindow>
 #include <QKeyEvent>
+#include <QMainWindow>
 #include <QShortcut>
 #include <list>
 #include <string>
@@ -10,13 +10,15 @@
 #include "../controller/main_controller.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui {
+class MainWindow;
+}
 QT_END_NAMESPACE
 
 namespace s21 {
 
 class CalcWindow : public QMainWindow {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   CalcWindow(CalcController &controller, QWidget *parent = nullptr);
@@ -38,8 +40,6 @@ class CalcWindow : public QMainWindow {
 
 };  // class CalculatorWindow
 
-}   // namespace s21
+}  // namespace s21
 
-
-
-#endif // SRC_VIEW_MAINWINDOW_H
+#endif  // SRC_VIEW_MAINWINDOW_H

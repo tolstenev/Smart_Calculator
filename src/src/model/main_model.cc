@@ -21,47 +21,24 @@ s21::CalcModel::CalcModel() {
 
 void s21::CalcModel::initFunctions() {
   functions_ = {
-      {"X", Lexem::num_x},
-      {"-", Lexem::unaryMinus},
-      {"sin", Lexem::sin},
-      {"cos", Lexem::cos},
-      {"tan", Lexem::tan},
-      {"asin", Lexem::aSin},
-      {"acos", Lexem::aCos},
-      {"atan", Lexem::aTan},
-      {"sqrt", Lexem::sqrt},
-      {"log", Lexem::log},
-      {"log10", Lexem::log10}};
+      {"X", Lexem::num_x},   {"-", Lexem::unaryMinus}, {"sin", Lexem::sin},
+      {"cos", Lexem::cos},   {"tan", Lexem::tan},      {"asin", Lexem::aSin},
+      {"acos", Lexem::aCos}, {"atan", Lexem::aTan},    {"sqrt", Lexem::sqrt},
+      {"log", Lexem::log},   {"log10", Lexem::log10}};
 }
 
 void s21::CalcModel::initOperators() {
-  operators_ = {
-      {'^', Lexem::deg},
-      {'*', Lexem::mul},
-      {'/', Lexem::div},
-      {'%', Lexem::mod},
-      {'+', Lexem::sum},
-      {'-', Lexem::sub}};
+  operators_ = {{'^', Lexem::deg}, {'*', Lexem::mul}, {'/', Lexem::div},
+                {'%', Lexem::mod}, {'+', Lexem::sum}, {'-', Lexem::sub}};
 }
 
 void s21::CalcModel::initPriorities() {
-  priorities_ = {
-      {Lexem::sin, 0},
-      {Lexem::cos, 0},
-      {Lexem::tan, 0},
-      {Lexem::aSin, 0},
-      {Lexem::aCos, 0},
-      {Lexem::aTan, 0},
-      {Lexem::sqrt, 0},
-      {Lexem::log, 0},
-      {Lexem::log10, 0},
-      {Lexem::unaryMinus, 1},
-      {Lexem::deg, 2},
-      {Lexem::mul, 3},
-      {Lexem::div, 3},
-      {Lexem::mod, 3},
-      {Lexem::sum, 4},
-      {Lexem::sub, 4}};
+  priorities_ = {{Lexem::sin, 0},        {Lexem::cos, 0},  {Lexem::tan, 0},
+                 {Lexem::aSin, 0},       {Lexem::aCos, 0}, {Lexem::aTan, 0},
+                 {Lexem::sqrt, 0},       {Lexem::log, 0},  {Lexem::log10, 0},
+                 {Lexem::unaryMinus, 1}, {Lexem::deg, 2},  {Lexem::mul, 3},
+                 {Lexem::div, 3},        {Lexem::mod, 3},  {Lexem::sum, 4},
+                 {Lexem::sub, 4}};
 }
 
 bool s21::CalcModel::isExpressionValid() {
@@ -72,7 +49,8 @@ bool s21::CalcModel::isExpressionValid() {
   symbol_table.add_constants();
   symbol_table.add_variable("X", x_value_);
   expression.register_symbol_table(symbol_table);
-  substituteExpression();  // "log" -> "log10", "ln" -> "log", "mod" -> "%", "E" -> "*10^"
+  substituteExpression();  // "log" -> "log10", "ln" -> "log", "mod" -> "%", "E"
+                           // -> "*10^"
   if (parser.compile(expr_, expression)) {
     valid = true;
   };
@@ -86,7 +64,8 @@ void s21::CalcModel::substituteExpression() {
   replaceInExpression("E", "*10^");
 }
 
-void s21::CalcModel::replaceInExpression(const std::string &from, const std::string &to) {
+void s21::CalcModel::replaceInExpression(const std::string &from,
+                                         const std::string &to) {
   size_t start_index = 0;
   while ((start_index = expr_.find(from, start_index)) != std::string::npos) {
     expr_.replace(start_index, from.length(), to);
@@ -97,7 +76,7 @@ void s21::CalcModel::replaceInExpression(const std::string &from, const std::str
 double s21::CalcModel::extractDigit(size_t &pos) {
   size_t start = pos;
   while (pos < expr_.length() &&
-      (std::isdigit(expr_[pos]) || expr_[pos] == '.'))
+         (std::isdigit(expr_[pos]) || expr_[pos] == '.'))
     ++pos;
   return std::stod(expr_.substr(start, pos - start));
 }
@@ -237,10 +216,12 @@ void s21::CalcModel::handleOpeningBrace(size_t &index) {
 
 void s21::CalcModel::handleClosingBrace(size_t &index) {
   ++index;
-  while (!stack_of_operators_.empty() && stack_of_operators_.top().getName() != Lexem::brOpen) {
+  while (!stack_of_operators_.empty() &&
+         stack_of_operators_.top().getName() != Lexem::brOpen) {
     stackOfOperatorsToVector();
   }
-  if (!stack_of_operators_.empty() && stack_of_operators_.top().getName() == Lexem::brOpen) {
+  if (!stack_of_operators_.empty() &&
+      stack_of_operators_.top().getName() == Lexem::brOpen) {
     stack_of_operators_.pop();
   }
   expect_unary_operator_ = false;
@@ -254,9 +235,11 @@ void s21::CalcModel::handleNumeric(size_t &index) {
 void s21::CalcModel::handleOperator(size_t &index) {
   Lexem handlingOperator = charToLexem(expr_[index++]);
   while (!stack_of_operators_.empty() &&
-      stack_of_operators_.top().getName() != Lexem::brOpen &&
-      getPriority(stack_of_operators_.top().getName()) <= getPriority(handlingOperator)) {
-    if (handlingOperator == Lexem::deg && stack_of_operators_.top().getName() == Lexem::deg) {
+         stack_of_operators_.top().getName() != Lexem::brOpen &&
+         getPriority(stack_of_operators_.top().getName()) <=
+             getPriority(handlingOperator)) {
+    if (handlingOperator == Lexem::deg &&
+        stack_of_operators_.top().getName() == Lexem::deg) {
       break;
     }
     stackOfOperatorsToVector();
@@ -296,7 +279,8 @@ void s21::CalcModel::calculatePostfix() {
   if (numbers.size() == 1) {
     result_ = numbers.top();
   } else {
-    // Calculation error. Set NaN to result_ that will be handle in isResultError()
+    // Calculation error. Set NaN to result_ that will be handle in
+    // isResultError()
     result_ = std::numeric_limits<double>::quiet_NaN();
   }
 }
@@ -313,38 +297,48 @@ bool s21::CalcModel::isOperation(const Token &token) {
   return token.getType() == LType::op;
 }
 
-void s21::CalcModel::handleNumber(const Token &token, std::stack<double> &numbers) {
-  isX(token) ? numbers.push(x_value_)
-             : numbers.push(token.getValue());
+void s21::CalcModel::handleNumber(const Token &token,
+                                  std::stack<double> &numbers) {
+  isX(token) ? numbers.push(x_value_) : numbers.push(token.getValue());
 }
 
 bool s21::CalcModel::isX(const Token &token) {
   return token.getName() == Lexem::num_x;
 }
 
-void s21::CalcModel::handleFunction(const Token &token, std::stack<double> &numbers) {
+void s21::CalcModel::handleFunction(const Token &token,
+                                    std::stack<double> &numbers) {
   double num = numbers.top();
   numbers.pop();
 
   double result;
   switch (token.getName()) {
-    case Lexem::unaryMinus:result = -1 * num;
+    case Lexem::unaryMinus:
+      result = -1 * num;
       break;
-    case Lexem::sqrt:result = std::sqrt(num);
+    case Lexem::sqrt:
+      result = std::sqrt(num);
       break;
-    case Lexem::log10:result = std::log10(num);
+    case Lexem::log10:
+      result = std::log10(num);
       break;
-    case Lexem::log:result = std::log(num);
+    case Lexem::log:
+      result = std::log(num);
       break;
-    case Lexem::sin:result = std::sin(num);
+    case Lexem::sin:
+      result = std::sin(num);
       break;
-    case Lexem::cos:result = std::cos(num);
+    case Lexem::cos:
+      result = std::cos(num);
       break;
-    case Lexem::tan:result = std::tan(num);
+    case Lexem::tan:
+      result = std::tan(num);
       break;
-    case Lexem::aSin:result = std::asin(num);
+    case Lexem::aSin:
+      result = std::asin(num);
       break;
-    case Lexem::aCos:result = std::acos(num);
+    case Lexem::aCos:
+      result = std::acos(num);
       break;
     default:  // Lexem::aTan
       result = std::atan(num);
@@ -353,9 +347,11 @@ void s21::CalcModel::handleFunction(const Token &token, std::stack<double> &numb
   numbers.push(result);
 }
 
-void s21::CalcModel::handleOperation(const Token &token, std::stack<double> &numbers) {
+void s21::CalcModel::handleOperation(const Token &token,
+                                     std::stack<double> &numbers) {
   if (numbers.size() < 2) {
-    // Calculation error. Set NaN to result_ that will be handle in isResultError()
+    // Calculation error. Set NaN to result_ that will be handle in
+    // isResultError()
     result_ = std::numeric_limits<double>::quiet_NaN();
   } else {
     double rhs = numbers.top();
@@ -365,15 +361,20 @@ void s21::CalcModel::handleOperation(const Token &token, std::stack<double> &num
 
     double result;
     switch (token.getName()) {
-      case Lexem::sum:result = lhs + rhs;
+      case Lexem::sum:
+        result = lhs + rhs;
         break;
-      case Lexem::sub:result = lhs - rhs;
+      case Lexem::sub:
+        result = lhs - rhs;
         break;
-      case Lexem::mul:result = lhs * rhs;
+      case Lexem::mul:
+        result = lhs * rhs;
         break;
-      case Lexem::div:result = lhs / rhs;
+      case Lexem::div:
+        result = lhs / rhs;
         break;
-      case Lexem::mod:result = std::fmod(lhs, rhs);
+      case Lexem::mod:
+        result = std::fmod(lhs, rhs);
         break;
       default:  // Lexem::deg
         result = std::pow(lhs, rhs);
