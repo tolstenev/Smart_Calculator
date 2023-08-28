@@ -7,6 +7,45 @@ s21::CalcWindow::CalcWindow(CalcController &controller, QWidget *parent)
   ui_->setupUi(this);
   setWindowTitle("SmartCalc by Yonn Argelia @yonnarge");
   connectSlots();
+  initPlot();
+
+
+  QVector<double> xData{}, yData{};
+
+  xData.push_back(1);
+  xData.push_back(2);
+  xData.push_back(25);
+  yData.push_back(1);
+  yData.push_back(2);
+  yData.push_back(25);
+
+  double x_min = ui_->spin_box_min_horizontal->value();
+  double x_max = ui_->spin_box_max_horizontal->value();
+  double y_min = ui_->spin_box_min_vertical->value();
+  double y_max = ui_->spin_box_max_vertical->value();
+
+  ui_->widget_plot->xAxis->setRange(x_min, x_max);
+  ui_->widget_plot->yAxis->setRange(y_min, y_max);
+
+  ui_->widget_plot->addGraph();
+  ui_->widget_plot->graph(0)->addData(xData, yData);
+
+
+  ui_->widget_plot->replot();
+}
+
+void s21::CalcWindow::initPlot() {
+  QCPGraph *graph = ui_->widget_plot->addGraph();
+  QColor transparentColor(0, 0, 0, 0);
+  ui_->widget_plot->setBackground(QBrush(transparentColor));
+  ui_->widget_plot->graph(0)->setLineStyle(QCPGraph::lsNone);
+  ui_->widget_plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
+  ui_->widget_plot->xAxis->setBasePen(QPen(Qt::gray));
+  ui_->widget_plot->yAxis->setBasePen(QPen(Qt::gray));
+  ui_->widget_plot->xAxis->setTickPen(QPen(Qt::gray));
+  ui_->widget_plot->yAxis->setTickPen(QPen(Qt::gray));
+  QPen pen(Qt::red);
+  ui_->widget_plot->graph(0)->setPen(pen);
 }
 
 s21::CalcWindow::~CalcWindow() { delete ui_; }

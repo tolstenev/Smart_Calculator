@@ -961,7 +961,7 @@
       </spacer>
      </item>
      <item row="0" column="1" rowspan="5" colspan="3">
-      <widget class="QGraphicsView" name="graphicsView"/>
+      <widget class="QCustomPlot" name="widget_plot" native="true"/>
      </item>
     </layout>
    </widget>
@@ -1052,6 +1052,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header location="global">src/rcs/qcustomplot/qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

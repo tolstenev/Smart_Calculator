@@ -38,9 +38,8 @@ class CalcTest : public testing::Test {
   std::string degree_hard_res_ = "2417851639229258349412352";
   std::string degree_funcs = "sin(.2)^(cos(1)+tan(1.1))^sin(.6)";
   std::string degree_funcs_res = "0.06624972";
-  std::string x_str_main_ = "sqrt((7.2+3.5-2.8)/(5.6*4.2))+sin(x)-cos(1.3)";
-  std::string x_str_ = "0.8";
-  double x_str_d_ = 0.8;
+  std::string x_str_main_ = "sqrt((7.2+3.5-2.8)/(5.6*4.2))+sin(X)-cos(1.3)";
+  double x_d_ = 0.8;
   std::string x_str_res_ = "1.02941257";
   std::string mod_ =
       "((sin(2.3)*(sqrt(7.8)+cos(1.2)))mod4.5)/(log(5.6)+atan(0.9))";
@@ -98,26 +97,10 @@ TEST_F(CalcTest, degreeFuncs) {
   EXPECT_EQ(calc_.getResult(degree_funcs), degree_funcs_res);
 }
 
-// TEST_F(CalcTest, xStrEnable) {
-//     calc_.setXValue(x_str_);
-//     calculate(x_str_main_);
-//     EXPECT_EQ(calc_.getResult(), x_str_res_);
-// }
-//
-// TEST_F(CalcTest, xStrEnableDouble) {
-//     calc_.setXValue(x_str_d_);
-//     calculate(x_str_main_);
-//     EXPECT_EQ(calc_.getResult(), x_str_res_);
-// }
-
-// TEST_F(CalcTest, xStrEnableDoubleAfter) {
-//     calc_.setExpr(fail_x_lexem_expr_);
-//     calc_.setXValue("0.8");
-//     calc_.validateExpr();
-//     calc_.convertExpr();
-//     calc_.calculateExpr();
-//     EXPECT_EQ(calc_.getResultD(), std::sin(0.8));
-// }
+ TEST_F(CalcTest, xStrEnableDouble) {
+     calc_.setXValue(x_d_);
+     EXPECT_EQ(calc_.getResult(x_str_main_), x_str_res_);
+ }
 
 TEST_F(CalcTest, modTest) { EXPECT_EQ(calc_.getResult(mod_), mod_res_); }
 

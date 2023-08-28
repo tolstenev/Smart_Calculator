@@ -8,6 +8,7 @@
 #include <string>
 
 #include "../controller/main_controller.h"
+#include "../rcs/qcustomplot/qcustomplot.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,6 +32,7 @@ class CalcWindow : public QMainWindow {
   Ui::MainWindow *ui_;
   CalcController &controller_;
   void connectSlots();
+  void initPlot();
 
  private slots:
   void printSymbols();

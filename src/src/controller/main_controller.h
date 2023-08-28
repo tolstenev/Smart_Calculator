@@ -8,7 +8,7 @@ class CalcController {
  public:
   CalcController(CalcModel &model) : model_(model) {}
 
-  void setXvalue(double x) { model_.setXvalue(x); };
+  void setXvalue(double x) { model_.setXValue(x); };
 
   std::string calculateExpression(const std::string &expression) {
     return model_.getResult(expression);

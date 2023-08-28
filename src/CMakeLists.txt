@@ -10,18 +10,25 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(PROJECT_ARCH_TARGET "amd64")
+
+set(QCustomPlot_DIR src/rcs/qcustomplot)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+add_subdirectory(src/rcs/qcustomplot)
+
 set(PROJECT_SOURCES
         src/main.cc
-        src/view/mainwindow.cc
-        src/view/mainwindow.h
-        src/view/mainwindow.ui
+        src/view/main_window.cc
+        src/view/main_window.h
+        src/view/main_window.ui
         src/controller/main_controller.h
         src/model/main_model.cc
         src/model/main_model.h
+        src/rcs/qcustomplot/qcustomplot.cpp
+        src/rcs/qcustomplot/qcustomplot.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -48,6 +55,8 @@ else()
 endif()
 
 target_link_libraries(YonnCalc PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE qcustomplot)
+target_compile_definitions(${PROJECT_NAME} PRIVATE QCUSTOMPLOT_USE_LIBRARY)
 
 set_target_properties(YonnCalc PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -60,3 +69,5 @@ set_target_properties(YonnCalc PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(YonnCalc)
 endif()
+
+

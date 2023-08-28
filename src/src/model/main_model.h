@@ -14,7 +14,7 @@ class CalcModel {
  public:
   CalcModel();
 
-  void setXvalue(double x) { x_value_ = x; };
+  void setXValue(double x) { x_value_ = x; };
   std::string getResult(const std::string &expression);
 
  private:
