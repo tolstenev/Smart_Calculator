@@ -38,9 +38,9 @@ bool s21::CalcModel::isExpressionValid() {
   symbol_table.add_constants();
   symbol_table.add_variable("X", x_value_);
   expression.register_symbol_table(symbol_table);
-  substituteExpression();  // "log" -> "log10", "ln" -> "log", "mod" -> "%", "E"
-  // -> "*10^"
-  if (parser.compile(expr_, expression)) {
+  substituteExpression();  // "log" -> "log10", "ln" -> "log",
+  // "mod" -> "%", "E" -> "*10^"
+  if (parser.compile(expression_, expression)) {
     valid = true;
   };
   return valid;
@@ -56,26 +56,31 @@ void s21::CalcModel::substituteExpression() {
 void s21::CalcModel::replaceInExpression(const std::string &from,
                                          const std::string &to) {
   size_t start_index = 0;
-  while ((start_index = expr_.find(from, start_index)) != std::string::npos) {
-    expr_.replace(start_index, from.length(), to);
+  while ((start_index = expression_.find(from, start_index)) != std::string::npos) {
+    expression_.replace(start_index, from.length(), to);
     start_index += to.length();
   }
 }
 
 double s21::CalcModel::extractDigit(size_t &pos) {
   size_t start = pos;
-  while (pos < expr_.length() &&
-         (std::isdigit(expr_[pos]) || expr_[pos] == '.'))
+  while (pos < expression_.length() &&
+         (std::isdigit(expression_[pos]) || expression_[pos] == '.'))
     ++pos;
-  return std::stod(expr_.substr(start, pos - start));
+  return std::stod(expression_.substr(start, pos - start));
 }
 
-void s21::CalcModel::calculateExpression() {
+// TODO: метод должен возвращать double
+std::string s21::CalcModel::calculateExpression() {
   if (!postfix_.empty()) {
     calculatePostfix();
   }
   convertResultToString();
+  return result_string_;
 }
+
+// TODO: написать метод для конвертации result_ в result_string_
+
 
 void s21::CalcModel::convertResultToString() {
   if (isResultError()) {
@@ -117,7 +122,7 @@ void s21::CalcModel::convertExpressionToPostfix() {
   expect_unary_operator_ = true;
   int which = 0;
   size_t index = 0;
-  size_t expression_length = expr_.length();
+  size_t expression_length = expression_.length();
 
   postfix_.clear();
   ClearStackOfOperators();
@@ -149,18 +154,18 @@ void s21::CalcModel::ClearStackOfOperators() {
 }
 
 bool s21::CalcModel::isVariable(size_t index) const {
-  return expr_[index] == 'X';
+  return expression_[index] == 'X';
 }
 
 int s21::CalcModel::isFunction(size_t &index) {
-  if (index + 4 < expr_.length() && expr_.substr(index, 5) == "log10") {
+  if (index + 4 < expression_.length() && expression_.substr(index, 5) == "log10") {
     index += 5;
     return static_cast<int>(Lexem::log10);
   }
   for (const auto &function : functions_) {
     const std::string &func_str = function.first;
-    if (index + func_str.length() <= expr_.length()) {
-      std::string func_candidate = expr_.substr(index, func_str.length());
+    if (index + func_str.length() <= expression_.length()) {
+      std::string func_candidate = expression_.substr(index, func_str.length());
       if (func_candidate == func_str) {
         if (!expect_unary_operator_ && (func_candidate == "-")) {
           break;
@@ -175,15 +180,15 @@ int s21::CalcModel::isFunction(size_t &index) {
 }
 
 bool s21::CalcModel::isOpeningBrace(size_t index) const {
-  return expr_[index] == '(';
+  return expression_[index] == '(';
 }
 
 bool s21::CalcModel::isClosingBrace(size_t index) const {
-  return expr_[index] == ')';
+  return expression_[index] == ')';
 }
 
 bool s21::CalcModel::isNumeric(size_t index) const {
-  return std::isdigit(expr_[index]) || expr_[index] == '.';
+  return std::isdigit(expression_[index]) || expression_[index] == '.';
 }
 
 void s21::CalcModel::handleVariable(size_t &index) {
@@ -222,7 +227,7 @@ void s21::CalcModel::handleNumeric(size_t &index) {
 }
 
 void s21::CalcModel::handleOperator(size_t &index) {
-  Lexem handlingOperator = charToLexem(expr_[index++]);
+  Lexem handlingOperator = charToLexem(expression_[index++]);
   while (!stack_of_operators_.empty() &&
          stack_of_operators_.top().getName() != Lexem::brOpen &&
          getPriority(stack_of_operators_.top().getName()) <=
@@ -268,8 +273,8 @@ void s21::CalcModel::calculatePostfix() {
   if (numbers.size() == 1) {
     result_ = numbers.top();
   } else {
-    // Calculation error. Set NaN to result_ that will be handle in
-    // isResultError()
+    // Calculation error. Set NaN to result_
+    // that will be handle in isResultError()
     result_ = std::numeric_limits<double>::quiet_NaN();
   }
 }
@@ -373,26 +378,16 @@ void s21::CalcModel::handleOperation(const Token &token,
   }
 }
 
-void s21::CalcModel::validateExpression (const std::string &expression) {
+void s21::CalcModel::calculate(const std::string &expression) {
+  setExpression(expression);
   try {
-    setExpression(expression);
     if (isExpressionValid()) {
       convertExpressionToPostfix();
+      result_string_ = calculateExpression();
     }
-    result_string_ = "";  // empty string means OK
+  } catch (...) {
+    result_string_ = "Error";
   }
-}
-
-std::string s21::CalcModel::getResult(const std::string &expression) {
-  validateExpression(expression);
-  calculateExpression();
-  return result_string_;
-}
-
-std::string s21::CalcModel::getDots(const std::string &expression) {
-  validateExpression(expression);
-  calculateDots();
-  return result_string_;
 }
 
 void s21::CalcModel::Plot::setPlotLimits(std::vector<double> plot_limits) {
@@ -402,20 +397,14 @@ void s21::CalcModel::Plot::setPlotLimits(std::vector<double> plot_limits) {
   y_max_ = plot_limits[3];
 }
 
-std::pair<std::vector<double>, std::vector<double>>
-s21::CalcModel::calculateDots(double x_min, double x_max, double y_min,
-                              double y_max) {
-
-
-  std::vector<double> vectorX;
-  std::vector<double> vectorY;
-
-  vectorX.push_back(1);
-  vectorX.push_back(2);
-  vectorX.push_back(3);
-  vectorY.push_back(1);
-  vectorY.push_back(2);
-  vectorY.push_back(3);
-
-  return {vectorX, vectorY};
+void s21::CalcModel::Plot::calculateDots() {
+  vector_x_.clear();
+  vector_y_.clear();
+  double step = 1;
+  double y_current = 0.0;
+  for (double x_current = x_min_; x_current <= x_max_; x_current += step) {
+    y_current = calculateExpression();
+    vector_x_.push_back(x_current);  // переделать на лист
+    vector_y_.push_back(y_current);
+  }
 }

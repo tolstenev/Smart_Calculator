@@ -15,7 +15,13 @@ class CalcModel {
   CalcModel();
 
   void setXValue(double x) { x_value_ = x; };
-  std::string getResult(const std::string &expression);
+  void calculate(const std::string &expression);
+  std::string getResultString() { return result_string_; };
+  void calculateDots(const std::string &expression, std::vector<double> plot_limits) {
+    plot_.setPlotLimits(plot_limits);
+    setExpression(expression);
+    plot_.calculateDots();
+  };
   std::pair<std::vector<double>, std::vector<double>> getDots() {
     return {plot_.getVectorX(), plot_.getVectorY()};
   };
@@ -37,17 +43,12 @@ class CalcModel {
   class Token {
    public:
     Token() = default;
-
     Token(LType type, Lexem name)
         : type_(type), name_(name), value_{} {}
-
     Token(LType type, Lexem name, double value)
         : type_(type), name_(name), value_(value) {}
-
     LType getType() const { return type_; }
-
     Lexem getName() const { return name_; }
-
     double getValue() const { return value_; }
 
    private:
@@ -59,8 +60,12 @@ class CalcModel {
   class Plot {
    public:
     void setPlotLimits(std::vector<double> plot_limits);
+    void calculateDots();
     std::vector<double> getVectorX() { return vector_x_; }
     std::vector<double> getVectorY() { return vector_y_; }
+    std::pair<std::vector<double>, std::vector<double>> getDots() {
+      return {vector_x_, vector_y_};
+    };
 
    private:
     double x_min_{};
@@ -72,7 +77,7 @@ class CalcModel {
   };
 
   Plot plot_;
-  std::string expr_{};
+  std::string expression_{};
   std::string result_string_ = "Error";
   double x_value_{};
   double result_{};
@@ -83,11 +88,10 @@ class CalcModel {
   std::unordered_map<Lexem, int> priorities_;
   std::stack<Token> stack_of_operators_;
 
-  void validateExpression (const std::string &expression);
-  void setExpression(const std::string &expr) { expr_ = expr; };
+  void setExpression(const std::string &expression) { expression_ = expression; };
   bool isExpressionValid();
   void convertExpressionToPostfix();
-  void calculateExpression();
+  std::string calculateExpression();
   void initFunctions();
   void initOperators();
   void initPriorities();

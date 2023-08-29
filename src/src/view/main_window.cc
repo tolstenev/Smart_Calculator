@@ -102,9 +102,9 @@ void s21::CalcWindow::deleteLastSymbol() {
 }
 
 void s21::CalcWindow::calculate() {
-  controller_.setXvalue(ui_->double_spin_box_x->value());
+  controller_.setXValue(ui_->double_spin_box_x->value());
   std::string expression = ui_->line_expr->text().toStdString();
-  std::string result = controller_.calculateExpression(expression);
+  std::string result = controller_.calculate(expression);
   ui_->line_res->setText(QString::fromStdString(result));
 }
 
@@ -114,26 +114,25 @@ void s21::CalcWindow::createPlot() {
   double y_min = ui_->spin_box_min_vertical->value();
   double y_max = ui_->spin_box_max_vertical->value();
   std::vector<double> plot_limits = { x_min, x_max, y_min, y_max };
-  controller_.setXvalue(ui_->double_spin_box_x->value());
+  controller_.setXValue(ui_->double_spin_box_x->value());
   std::string expression = ui_->line_expr->text().toStdString();
-  std::string result = controller_.calculateExpression(expression);
+  std::string result = controller_.calculate(expression);
 
   ui_->line_res->setText(QString::fromStdString(result));
 
   std::pair<std::vector<double>, std::vector<double>> dots =
-      controller_.getDots(expression, plot_limits);
+      controller_.calculateDots(expression, plot_limits);
 
-    ui_->widget_plot->clearGraphs();
+  ui_->widget_plot->clearGraphs();
 
-    ui_->widget_plot->xAxis->setRange(x_min, x_max);
-    ui_->widget_plot->yAxis->setRange(y_min, y_max);
-    ui_->widget_plot->addGraph();
-    QVector<double> dots_x(dots.first.begin(), dots.first.end());
-    QVector<double> dots_y(dots.second.begin(), dots.second.end());
-    ui_->widget_plot->graph(0)->addData(dots_x, dots_y);
-    formatPlotLine();
-    ui_->widget_plot->replot();
-  }
+  ui_->widget_plot->xAxis->setRange(x_min, x_max);
+  ui_->widget_plot->yAxis->setRange(y_min, y_max);
+  ui_->widget_plot->addGraph();
+  QVector<double> dots_x(dots.first.begin(), dots.first.end());
+  QVector<double> dots_y(dots.second.begin(), dots.second.end());
+  ui_->widget_plot->graph(0)->addData(dots_x, dots_y);
+  formatPlotLine();
+  ui_->widget_plot->replot();
 }
 
 void s21::CalcWindow::formatPlotLine() {
