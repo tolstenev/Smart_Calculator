@@ -50,7 +50,7 @@ bool s21::CalcModel::isExpressionValid() {
   symbol_table.add_variable("X", x_value_);
   expression.register_symbol_table(symbol_table);
   substituteExpression();  // "log" -> "log10", "ln" -> "log", "mod" -> "%", "E"
-                           // -> "*10^"
+  // -> "*10^"
   if (parser.compile(expr_, expression)) {
     valid = true;
   };
@@ -340,7 +340,7 @@ void s21::CalcModel::handleFunction(const Token &token,
     case Lexem::aCos:
       result = std::acos(num);
       break;
-    default:  // Lexem::aTan
+    default: /*Lexem::aTan*/
       result = std::atan(num);
       break;
   }
@@ -376,10 +376,26 @@ void s21::CalcModel::handleOperation(const Token &token,
       case Lexem::mod:
         result = std::fmod(lhs, rhs);
         break;
-      default:  // Lexem::deg
+      default: /*Lexem::deg*/
         result = std::pow(lhs, rhs);
         break;
     }
     numbers.push(result);
   }
+}
+
+std::pair<std::vector<double>, std::vector<double>>
+s21::CalcModel::calculateDots(double x_min, double x_max, double y_min,
+                              double y_max) {
+  std::vector<double> vectorX;
+  std::vector<double> vectorY;
+
+  vectorX.push_back(1);
+  vectorX.push_back(2);
+  vectorX.push_back(3);
+  vectorY.push_back(1);
+  vectorY.push_back(2);
+  vectorY.push_back(3);
+
+  return {vectorX, vectorY};
 }

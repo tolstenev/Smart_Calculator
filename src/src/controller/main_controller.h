@@ -14,6 +14,11 @@ class CalcController {
     return model_.getResult(expression);
   };
 
+  std::pair<std::vector<double>, std::vector<double>> calculateDots(
+      double x_min, double x_max, double y_min, double y_max) {
+    return model_.calculateDots(x_min, x_max, y_min, y_max);
+  };
+
  private:
   CalcModel &model_;
 };  // class CalcController

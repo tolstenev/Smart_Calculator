@@ -97,10 +97,10 @@ TEST_F(CalcTest, degreeFuncs) {
   EXPECT_EQ(calc_.getResult(degree_funcs), degree_funcs_res);
 }
 
- TEST_F(CalcTest, xStrEnableDouble) {
-     calc_.setXValue(x_d_);
-     EXPECT_EQ(calc_.getResult(x_str_main_), x_str_res_);
- }
+TEST_F(CalcTest, xStrEnableDouble) {
+  calc_.setXValue(x_d_);
+  EXPECT_EQ(calc_.getResult(x_str_main_), x_str_res_);
+}
 
 TEST_F(CalcTest, modTest) { EXPECT_EQ(calc_.getResult(mod_), mod_res_); }
 

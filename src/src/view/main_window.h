@@ -33,12 +33,14 @@ class CalcWindow : public QMainWindow {
   CalcController &controller_;
   void connectSlots();
   void initPlot();
+  void formatPlot();
 
  private slots:
   void printSymbols();
   void clearLines();
   void deleteLastSymbol();
   void calculate();
+  void createPlot();
 
 };  // class CalculatorWindow
 

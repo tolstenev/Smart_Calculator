@@ -16,6 +16,10 @@ class CalcModel {
 
   void setXValue(double x) { x_value_ = x; };
   std::string getResult(const std::string &expression);
+  std::pair<std::vector<double>, std::vector<double>> calculateDots(double x_min,
+                                                                    double x_max,
+                                                                    double y_min,
+                                                                    double y_max);
 
  private:
   enum class Lexem : int {

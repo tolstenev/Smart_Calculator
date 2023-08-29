@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>413</width>
-    <height>708</height>
+    <height>724</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -725,7 +725,7 @@
         <string>min vertical</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
        </property>
       </widget>
      </item>
@@ -741,7 +741,7 @@
         <string>max vertical</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
        </property>
       </widget>
      </item>
@@ -768,6 +768,10 @@
        <property name="styleSheet">
         <string notr="true">QSpinBox {
     background-color: transparent;
+}
+QSpinBox::up-button,
+QSpinBox::down-button {
+    width: 0;
 }
 </string>
        </property>
@@ -800,7 +804,10 @@
         <string notr="true">QSpinBox {
     background-color: transparent;
 }
-</string>
+QSpinBox::up-button,
+QSpinBox::down-button {
+    width: 0;
+}</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -837,7 +844,10 @@
         <string notr="true">QSpinBox {
     background-color: transparent;
 }
-</string>
+QSpinBox::up-button,
+QSpinBox::down-button {
+    width: 0;
+}</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -918,7 +928,10 @@
         <string notr="true">QSpinBox {
     background-color: transparent;
 }
-</string>
+QSpinBox::up-button,
+QSpinBox::down-button {
+    width: 0;
+}</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1017,6 +1030,10 @@
     <property name="styleSheet">
      <string notr="true">QDoubleSpinBox {
     background-color: transparent;
+}
+QDoubleSpinBox::up-button,
+QDoubleSpinBox::down-button {
+    width: 0;
 }
 </string>
     </property>
