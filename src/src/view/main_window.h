@@ -33,7 +33,7 @@ class CalcWindow : public QMainWindow {
   CalcController &controller_;
   void connectSlots();
   void initPlot();
-  void formatPlot();
+  void formatPlotLine();
 
  private slots:
   void printSymbols();

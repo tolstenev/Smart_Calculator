@@ -16,10 +16,9 @@ class CalcModel {
 
   void setXValue(double x) { x_value_ = x; };
   std::string getResult(const std::string &expression);
-  std::pair<std::vector<double>, std::vector<double>> calculateDots(double x_min,
-                                                                    double x_max,
-                                                                    double y_min,
-                                                                    double y_max);
+  std::pair<std::vector<double>, std::vector<double>> getDots() {
+    return {plot_.getVectorX(), plot_.getVectorY()};
+  };
 
  private:
   enum class Lexem : int {
@@ -57,6 +56,22 @@ class CalcModel {
     double value_{};
   };  // class Token
 
+  class Plot {
+   public:
+    void setPlotLimits(std::vector<double> plot_limits);
+    std::vector<double> getVectorX() { return vector_x_; }
+    std::vector<double> getVectorY() { return vector_y_; }
+
+   private:
+    double x_min_{};
+    double x_max_{};
+    double y_min_{};
+    double y_max_{};
+    std::vector<double> vector_x_{};
+    std::vector<double> vector_y_{};
+  };
+
+  Plot plot_;
   std::string expr_{};
   std::string result_string_ = "Error";
   double x_value_{};
@@ -68,6 +83,7 @@ class CalcModel {
   std::unordered_map<Lexem, int> priorities_;
   std::stack<Token> stack_of_operators_;
 
+  void validateExpression (const std::string &expression);
   void setExpression(const std::string &expr) { expr_ = expr; };
   bool isExpressionValid();
   void convertExpressionToPostfix();

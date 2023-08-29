@@ -1,17 +1,6 @@
 #include "main_model.h"
 
-std::string s21::CalcModel::getResult(const std::string &expression) {
-  try {
-    setExpression(expression);
-    if (isExpressionValid()) {
-      convertExpressionToPostfix();
-      calculateExpression();
-    }
-    return result_string_;
-  } catch (...) {
-    return "Error";
-  }
-}
+
 
 s21::CalcModel::CalcModel() {
   initFunctions();
@@ -384,9 +373,40 @@ void s21::CalcModel::handleOperation(const Token &token,
   }
 }
 
+void s21::CalcModel::validateExpression (const std::string &expression) {
+  try {
+    setExpression(expression);
+    if (isExpressionValid()) {
+      convertExpressionToPostfix();
+    }
+    result_string_ = "";  // empty string means OK
+  }
+}
+
+std::string s21::CalcModel::getResult(const std::string &expression) {
+  validateExpression(expression);
+  calculateExpression();
+  return result_string_;
+}
+
+std::string s21::CalcModel::getDots(const std::string &expression) {
+  validateExpression(expression);
+  calculateDots();
+  return result_string_;
+}
+
+void s21::CalcModel::Plot::setPlotLimits(std::vector<double> plot_limits) {
+  x_min_ = plot_limits[0];
+  x_max_ = plot_limits[1];
+  y_min_ = plot_limits[2];
+  y_max_ = plot_limits[3];
+}
+
 std::pair<std::vector<double>, std::vector<double>>
 s21::CalcModel::calculateDots(double x_min, double x_max, double y_min,
                               double y_max) {
+
+
   std::vector<double> vectorX;
   std::vector<double> vectorY;
 
