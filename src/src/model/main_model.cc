@@ -70,33 +70,23 @@ double s21::CalcModel::extractDigit(size_t &pos) {
   return std::stod(expression_.substr(start, pos - start));
 }
 
-// TODO: метод должен возвращать double
-std::string s21::CalcModel::calculateExpression() {
+void s21::CalcModel::calculateExpression() {
   if (!postfix_.empty()) {
     calculatePostfix();
   }
-  convertResultToString();
-  return result_string_;
 }
-
-// TODO: написать метод для конвертации result_ в result_string_
-
 
 void s21::CalcModel::convertResultToString() {
   if (isResultError()) {
     result_string_ = "Error";
   } else {
-    formatResultString();
+    setAccuracy();
+    trimTrailingZeros();
   }
 }
 
 bool s21::CalcModel::isResultError() const {
   return std::isinf(result_) || std::isnan(result_);
-}
-
-void s21::CalcModel::formatResultString() {
-  setAccuracy();
-  trimTrailingZeros();
 }
 
 void s21::CalcModel::setAccuracy() {
@@ -383,7 +373,8 @@ void s21::CalcModel::calculate(const std::string &expression) {
   try {
     if (isExpressionValid()) {
       convertExpressionToPostfix();
-      result_string_ = calculateExpression();
+      calculateExpression();
+      convertResultToString();
     }
   } catch (...) {
     result_string_ = "Error";
@@ -397,13 +388,17 @@ void s21::CalcModel::Plot::setPlotLimits(std::vector<double> plot_limits) {
   y_max_ = plot_limits[3];
 }
 
-void s21::CalcModel::Plot::calculateDots() {
+void s21::CalcModel::Plot::calculateDots(CalcModel *model) {
   vector_x_.clear();
   vector_y_.clear();
-  double step = 1;
   double y_current = 0.0;
-  for (double x_current = x_min_; x_current <= x_max_; x_current += step) {
-    y_current = calculateExpression();
+  double x_current = 0.0;
+  double step = 1.0;
+  int steps = static_cast<int>((x_max_ - x_min_) / step);
+  for (int i = 0; i <= steps; ++i) {
+    x_current = x_min_ + i * step;
+    model->calculateExpression();
+    y_current = model->result_;
     vector_x_.push_back(x_current);  // переделать на лист
     vector_y_.push_back(y_current);
   }

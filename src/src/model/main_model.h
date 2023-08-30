@@ -19,8 +19,8 @@ class CalcModel {
   std::string getResultString() { return result_string_; };
   void calculateDots(const std::string &expression, std::vector<double> plot_limits) {
     plot_.setPlotLimits(plot_limits);
-    setExpression(expression);
-    plot_.calculateDots();
+    calculate(expression);
+    plot_.calculateDots(this);
   };
   std::pair<std::vector<double>, std::vector<double>> getDots() {
     return {plot_.getVectorX(), plot_.getVectorY()};
@@ -34,11 +34,11 @@ class CalcModel {
     deg, mul, div, sum, sub, mod,
     unaryMinus, brOpen,
     num, num_x
-  };
+  };  // class Lexem
 
   enum class LType : int {
     num, func, op
-  };
+  };  // class LType
 
   class Token {
    public:
@@ -60,7 +60,7 @@ class CalcModel {
   class Plot {
    public:
     void setPlotLimits(std::vector<double> plot_limits);
-    void calculateDots();
+    void calculateDots(CalcModel *model);
     std::vector<double> getVectorX() { return vector_x_; }
     std::vector<double> getVectorY() { return vector_y_; }
     std::pair<std::vector<double>, std::vector<double>> getDots() {
@@ -74,7 +74,7 @@ class CalcModel {
     double y_max_{};
     std::vector<double> vector_x_{};
     std::vector<double> vector_y_{};
-  };
+  };  // class Plot
 
   Plot plot_;
   std::string expression_{};
@@ -91,7 +91,7 @@ class CalcModel {
   void setExpression(const std::string &expression) { expression_ = expression; };
   bool isExpressionValid();
   void convertExpressionToPostfix();
-  std::string calculateExpression();
+  void calculateExpression();
   void initFunctions();
   void initOperators();
   void initPriorities();
@@ -122,7 +122,6 @@ class CalcModel {
   void handleOperation(const Token &token, std::stack<double> &numbers);
   void convertResultToString();
   bool isResultError() const;
-  void formatResultString();
   void setAccuracy();
   void trimTrailingZeros();
   void ClearStackOfOperators();

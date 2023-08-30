@@ -54,55 +54,70 @@ class CalcTest : public testing::Test {
 };
 
 TEST_F(CalcTest, DivByZero) {
-  EXPECT_EQ(calc_.getResult(err_div_zero_), error_);
+  calc_.calculate(err_div_zero_);
+  EXPECT_EQ(calc_.getResultString(), error_);
 }
 
 TEST_F(CalcTest, sqrtOpp) {
-  EXPECT_EQ(calc_.getResult(err_sqrt_oppos_), error_);
+  calc_.calculate(err_sqrt_oppos_);
+  EXPECT_EQ(calc_.getResultString(), error_);
 }
 
 TEST_F(CalcTest, invExpr) {
-  EXPECT_EQ(calc_.getResult(err_abracadabra_), error_);
+  calc_.calculate(err_abracadabra_);
+  EXPECT_EQ(calc_.getResultString(), error_);
 }
 
 TEST_F(CalcTest, SimpleLog) {
-  EXPECT_EQ(calc_.getResult(simple_log_), simple_log_res_);
+  calc_.calculate(simple_log_);
+  EXPECT_EQ(calc_.getResultString(), simple_log_res_);
 }
 
 TEST_F(CalcTest, Multifold) {
-  EXPECT_EQ(calc_.getResult(multifold_), multifold_res_);
+  calc_.calculate(multifold_);
+  EXPECT_EQ(calc_.getResultString(), multifold_res_);
 }
 
 TEST_F(CalcTest, Functions) {
-  EXPECT_EQ(calc_.getResult(functions_t_), functions_res_);
+  calc_.calculate(functions_t_);
+  EXPECT_EQ(calc_.getResultString(), functions_res_);
 }
 
 TEST_F(CalcTest, Folded_funcs) {
-  EXPECT_EQ(calc_.getResult(folded_funcs_), folded_funcs_res_);
+  calc_.calculate(folded_funcs_);
+  EXPECT_EQ(calc_.getResultString(), folded_funcs_res_);
 }
 
 TEST_F(CalcTest, Exp_notation) {
-  EXPECT_EQ(calc_.getResult(exp_notation_), exp_notation_res_);
+  calc_.calculate(exp_notation_);
+  EXPECT_EQ(calc_.getResultString(), exp_notation_res_);
 }
 
 TEST_F(CalcTest, expNSimple) {
-  EXPECT_EQ(calc_.getResult(exp_not_simple_), exp_not_simple_res_);
+  calc_.calculate(exp_not_simple_);
+  EXPECT_EQ(calc_.getResultString(), exp_not_simple_res_);
 }
 
 TEST_F(CalcTest, degreeHard) {
-  EXPECT_EQ(calc_.getResult(degree_hard_), degree_hard_res_);
+  calc_.calculate(degree_hard_);
+  EXPECT_EQ(calc_.getResultString(), degree_hard_res_);
 }
 
 TEST_F(CalcTest, degreeFuncs) {
-  EXPECT_EQ(calc_.getResult(degree_funcs), degree_funcs_res);
+  calc_.calculate(degree_funcs);
+  EXPECT_EQ(calc_.getResultString(), degree_funcs_res);
 }
 
 TEST_F(CalcTest, xStrEnableDouble) {
   calc_.setXValue(x_d_);
-  EXPECT_EQ(calc_.getResult(x_str_main_), x_str_res_);
+  calc_.calculate(x_str_main_);
+  EXPECT_EQ(calc_.getResultString(), x_str_res_);
 }
 
-TEST_F(CalcTest, modTest) { EXPECT_EQ(calc_.getResult(mod_), mod_res_); }
+TEST_F(CalcTest, modTest) {
+  calc_.calculate(mod_);
+  EXPECT_EQ(calc_.getResultString(), mod_res_);
+}
 
 // TEST_F(CalcTest, graphTest) {
 //     calc_.setExpr(graph_func_);
@@ -132,16 +147,6 @@ TEST_F(CalcTest, modTest) { EXPECT_EQ(calc_.getResult(mod_), mod_res_); }
 //     YVector = vector_.second;
 //     EXPECT_TRUE(XVector.empty());
 //     EXPECT_TRUE(XVector.empty());
-// }
-
-// TEST_F(CalcTest, lexemFail) {
-//     calc_.setExpr(fail_expr_);
-//     calc_.setXValue(x_str_);
-//     calc_.validateExpr();
-//     calc_.convertExpr();
-//     calc_.calculateExpr();
-//     EXPECT_EQ(calc_.getStatus().first, 50);
-//     EXPECT_EQ(calc_.getResult(), error_);
 // }
 
 int main(int argc, char *argv[]) {
