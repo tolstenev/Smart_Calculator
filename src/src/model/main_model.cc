@@ -397,6 +397,7 @@ void s21::CalcModel::Plot::calculateDots(CalcModel *model) {
   int steps = static_cast<int>((x_max_ - x_min_) / step);
   for (int i = 0; i <= steps; ++i) {
     x_current = x_min_ + i * step;
+    model->setXValue(x_current);
     model->calculateExpression();
     y_current = model->result_;
     vector_x_.push_back(x_current);  // переделать на лист

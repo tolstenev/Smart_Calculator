@@ -317,7 +317,7 @@
         <string>plot</string>
        </property>
        <property name="shortcut">
-        <string>Space</string>
+        <string>Return</string>
        </property>
       </widget>
      </item>
@@ -745,47 +745,6 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QSpinBox" name="spin_box_min_vertical">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>80</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>80</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QSpinBox {
-    background-color: transparent;
-}
-QSpinBox::up-button,
-QSpinBox::down-button {
-    width: 0;
-}
-</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="maximum">
-        <number>100000</number>
-       </property>
-       <property name="value">
-        <number>20</number>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QSpinBox" name="spin_box_max_vertical">
        <property name="sizePolicy">
@@ -812,11 +771,14 @@ QSpinBox::down-button {
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
+       <property name="minimum">
+        <number>-1000000</number>
+       </property>
        <property name="maximum">
-        <number>100000</number>
+        <number>1000000</number>
        </property>
        <property name="value">
-        <number>20</number>
+        <number>5</number>
        </property>
       </widget>
      </item>
@@ -852,11 +814,14 @@ QSpinBox::down-button {
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
+       <property name="minimum">
+        <number>-1000000</number>
+       </property>
        <property name="maximum">
-        <number>100000</number>
+        <number>1000000</number>
        </property>
        <property name="value">
-        <number>20</number>
+        <number>0</number>
        </property>
       </widget>
      </item>
@@ -936,11 +901,14 @@ QSpinBox::down-button {
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
+       <property name="minimum">
+        <number>-1000000</number>
+       </property>
        <property name="maximum">
-        <number>100000</number>
+        <number>1000000</number>
        </property>
        <property name="value">
-        <number>20</number>
+        <number>5</number>
        </property>
       </widget>
      </item>
@@ -975,6 +943,43 @@ QSpinBox::down-button {
      </item>
      <item row="0" column="1" rowspan="5" colspan="3">
       <widget class="QCustomPlot" name="widget_plot" native="true"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QSpinBox" name="spin_box_min_vertical">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QSpinBox {
+    background-color: transparent;
+}
+QSpinBox::up-button,
+QSpinBox::down-button {
+    width: 0;
+}</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="minimum">
+        <number>-1000000</number>
+       </property>
+       <property name="maximum">
+        <number>1000000</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>

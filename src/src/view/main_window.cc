@@ -6,6 +6,7 @@ s21::CalcWindow::CalcWindow(CalcController &controller, QWidget *parent)
     : QMainWindow(parent), ui_(new Ui::MainWindow), controller_(controller) {
   ui_->setupUi(this);
   setWindowTitle("SmartCalc by Yonn Argelia @yonnarge");
+  setFixedSize(415, 725);
   connectSlots();
   initPlot();
 }
