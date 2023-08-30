@@ -398,42 +398,62 @@ void s21::CalcModel::Plot::setPlotLimits(std::vector<double> plot_limits) {
 }
 
 void s21::CalcModel::Plot::calculateDots(CalcModel *model) {
-  vector_x_.clear();
-  vector_y_.clear();
-  double step = (x_max_ - x_min_) / 289;
-  double delta_x = 0, delta_y = 0;
-  x_curr_ = x_min_;
-  x_prev_ = x_min_ - step;
-  y_prev_ = y_min_;
+  initializeData();
   while (x_curr_ <= x_max_) {
-    x_curr_ = x_curr_ + step;
-    y_curr_ = calculateOneDot(x_curr_, x_curr_, step, model);
-    if (y_curr_ != 0 && y_curr_ >= y_min_ && y_curr_ <= y_max_) {
-      calculateDeltas(delta_x, delta_y);
-      while (delta_x > 1.5 && delta_y > 1.5) {
-        (delta_x > 1.5 || delta_y > 1.5) ? step /= 1.01 : step *= 1.01;
-        y_curr_ = calculateOneDot(x_curr_, x_prev_, step, model);
-        calculateDeltas(delta_x, delta_y);
+    adjustDot(model);
+    updatePreviousValues();
+    addDotToList();
+  }
+}
+
+void s21::CalcModel::Plot::adjustDot(CalcModel *model) {
+  calculateOneDot(x_curr_, model);
+  if (isValidDot()) {
+    calculateDeltas();
+    while (delta_x_ > 1.5 && delta_y_ > 1.5) {
+      if (delta_x_ > 1.5 || delta_y_ > 1.5) {
+        step_ /= 1.01;
+      } else {
+        step_ *= 1.01;
       }
-      x_prev_ = x_curr_;
-      y_prev_ = y_curr_;
-      vector_x_.push_back(x_curr_);
-      vector_y_.push_back(y_curr_);
+      calculateOneDot(x_prev_, model);
+      calculateDeltas();
     }
   }
 }
 
-void s21::CalcModel::Plot::calculateDeltas(double &delta_x, double &delta_y) {
-  delta_x = x_curr_ - x_prev_;
-  delta_y = x_curr_ - y_prev_;
+bool s21::CalcModel::Plot::isValidDot() const {
+  return (y_curr_ != 0 && y_curr_ >= y_min_ && y_curr_ <= y_max_);
 }
 
-double s21::CalcModel::Plot::calculateOneDot(double &x_curr,
-                                             const double &x_prev,
-                                             const double &step,
-                                             CalcModel *model) {
-  x_curr = x_prev + step;
-  model->setXValue(x_curr);
+
+void s21::CalcModel::Plot::updatePreviousValues() {
+  x_prev_ = x_curr_;
+  y_prev_ = y_curr_;
+}
+
+void s21::CalcModel::Plot::addDotToList() {
+  list_x_.emplace_back(x_curr_);
+  list_y_.emplace_back(y_curr_);
+}
+
+void s21::CalcModel::Plot::initializeData() {
+  list_x_.clear();
+  list_y_.clear();
+  step_ = (x_max_ - x_min_) / 289;
+  x_curr_ = x_min_;
+  x_prev_ = x_min_ - step_;
+  y_prev_ = y_min_;
+}
+
+void s21::CalcModel::Plot::calculateDeltas() {
+  delta_x_ = x_curr_ - x_prev_;
+  delta_y_ = x_curr_ - y_prev_;
+}
+
+void s21::CalcModel::Plot::calculateOneDot(const double &x_prev, CalcModel *model) {
+  x_curr_ = x_prev + step_;
+  model->setXValue(x_curr_);
   model->calculateExpression();
-  return model->result_;
+  y_curr_ = model->result_;
 }

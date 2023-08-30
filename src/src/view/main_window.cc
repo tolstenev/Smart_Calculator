@@ -118,7 +118,7 @@ void s21::CalcWindow::createPlot() {
 
   ui_->line_res->setText(QString::fromStdString(result));
 
-  std::pair<std::vector<double>, std::vector<double>> dots =
+  std::pair<std::list<double>, std::list<double>> dots =
       controller_.calculateDots(expression, plot_limits);
 
   ui_->widget_plot->clearGraphs();
@@ -126,9 +126,9 @@ void s21::CalcWindow::createPlot() {
   ui_->widget_plot->xAxis->setRange(x_min, x_max);
   ui_->widget_plot->yAxis->setRange(y_min, y_max);
   ui_->widget_plot->addGraph();
-  QVector<double> dots_x(dots.first.begin(), dots.first.end());
-  QVector<double> dots_y(dots.second.begin(), dots.second.end());
-  ui_->widget_plot->graph(0)->addData(dots_x, dots_y);
+  QList<double> dots_x(dots.first.begin(), dots.first.end());
+  QList<double> dots_y(dots.second.begin(), dots.second.end());
+  ui_->widget_plot->graph(0)->addData(dots_x, dots_y, true);
   formatPlotLine();
   ui_->widget_plot->replot();
 }

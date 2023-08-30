@@ -4,6 +4,7 @@
 #include <sstream>
 #include <map>
 #include <queue>
+#include <list>
 #include <unordered_map>
 #include <string>
 #include <iostream>
@@ -18,8 +19,8 @@ class CalcModel {
   void calculate(const std::string &expression);
   std::string getResultString() { return result_string_; };
   void calculateDots(const std::string &expression, std::vector<double> plot_limits);
-  std::pair<std::vector<double>, std::vector<double>> getDots() {
-    return {plot_.getVectorX(), plot_.getVectorY()};
+  std::pair<std::list<double>, std::list<double>> getDots() {
+    return { plot_.getListX(), plot_.getListY() };
   };
 
  private:
@@ -56,14 +57,18 @@ class CalcModel {
   class Plot {
    public:
     void setPlotLimits(std::vector<double> plot_limits);
+    void initializeData();
+    bool isValidDot() const;
+    void addDotToList();
+    void updatePreviousValues();
+    void adjustDot(CalcModel *model);
     void calculateDots(CalcModel *model);
-    double calculateOneDot (double &x_curr, const double &x_prev,
-                             const double &acc, CalcModel *model);
-    void calculateDeltas(double &delta_x, double &delta_y);
-    std::vector<double> getVectorX() { return vector_x_; }
-    std::vector<double> getVectorY() { return vector_y_; }
-    std::pair<std::vector<double>, std::vector<double>> getDots() {
-      return {vector_x_, vector_y_};
+    void calculateOneDot (const double &x_prev, CalcModel *model);
+    void calculateDeltas();
+    std::list<double> getListX() { return list_x_; }
+    std::list<double> getListY() { return list_y_; }
+    std::pair<std::list<double>, std::list<double>> getDots() {
+      return {list_x_, list_y_};
     };
 
    private:
@@ -75,8 +80,11 @@ class CalcModel {
     double x_prev_{};
     double y_curr_{};
     double y_prev_{};
-    std::vector<double> vector_x_{};
-    std::vector<double> vector_y_{};
+    double step_{};
+    double delta_x_{};
+    double delta_y_{};
+    std::list<double> list_x_{};
+    std::list<double> list_y_{};
   };  // class Plot
 
   Plot plot_;
@@ -133,44 +141,3 @@ class CalcModel {
 }  // namespace s21
 
 #endif  // SRC_MODEL_MAIN_MODEL_H_
-
-//void s21::CalcModel::Plot::calculateDots(CalcModel *model) {
-//  vector_x_.clear();
-//  vector_y_.clear();
-//  double step = (x_max_ - x_min_) / 289;
-//  double delta_x = 0, delta_y = 0;
-//  x_curr_ = x_min_;
-//  x_prev_ = x_min_ - step;
-//  y_prev_ = y_min_;
-//  while (x_curr_ <= x_max_) {
-//    x_curr_ = x_curr_ + step;
-//    y_curr_ = calculateOneDot(x_curr_, x_curr_, step, model);
-//    if (y_curr_ != 0 && y_curr_ >= y_min_ && y_curr_ <= y_max_) {
-//      calculateDeltas(delta_x, delta_y);
-//      while ((delta_x > 1.5 || delta_y > 1.5) /*&& (delta_x < 20 || delta_y < 20) && (step > 1e-07)*/) {
-//        (delta_x > 1.5 || delta_y > 1.5) ? step /= 1.01 : step *= 1.01;
-//        y_curr_ = calculateOneDot(x_curr_, x_prev_, step, model);
-//        calculateDeltas(delta_x, delta_y);
-//      }
-//      x_prev_ = x_curr_;
-//      y_prev_ = y_curr_;
-//      vector_x_.push_back(x_curr_);
-//      vector_y_.push_back(y_curr_);
-//    }
-//  }
-//}
-//
-//void s21::CalcModel::Plot::calculateDeltas(double &delta_x, double &delta_y) {
-//  delta_x = x_curr_ - x_prev_;
-//  delta_y = x_curr_ - y_prev_;
-//}
-//
-//double s21::CalcModel::Plot::calculateOneDot(double &x_curr,
-//                                             const double &x_prev,
-//                                             const double &step,
-//                                             CalcModel *model) {
-//  x_curr = x_prev + step;
-//  model->setXValue(x_curr);
-//  model->calculateExpression();
-//  return model->result_;
-//}
