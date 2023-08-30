@@ -22,10 +22,7 @@ void s21::CalcWindow::initPlot() {
   ui_->widget_plot->yAxis->setTickPen(QPen(Qt::gray));
   ui_->widget_plot->xAxis->setTickLabelColor(Qt::gray);
   ui_->widget_plot->yAxis->setTickLabelColor(Qt::gray);
-
 }
-
-
 
 s21::CalcWindow::~CalcWindow() { delete ui_; }
 
@@ -44,7 +41,6 @@ void s21::CalcWindow::printSymbols() {
 }
 
 void s21::CalcWindow::connectSlots() {
-  QShortcut *sc_enter = new QShortcut(QKeySequence(Qt::Key_Return), this);
   QShortcut *sc_equal = new QShortcut(QKeySequence(Qt::Key_Equal), this);
   std::list<QPushButton *> entering_buttons = {
       ui_->button_0,
@@ -83,17 +79,18 @@ void s21::CalcWindow::connectSlots() {
     connect(button, SIGNAL(clicked()), this, SLOT(printSymbols()));
   }
 
-  connect(ui_->button_ac, SIGNAL(clicked()), this, SLOT(clearLines()));
+  connect(ui_->button_ac, SIGNAL(clicked()), this, SLOT(clearAll()));
   connect(ui_->button_bs, SIGNAL(clicked()), this, SLOT(deleteLastSymbol()));
   connect(ui_->button_plot, SIGNAL(clicked()), this, SLOT(createPlot()));
   connect(ui_->button_calculate, SIGNAL(clicked()), this, SLOT(calculate()));
-  connect(sc_enter, SIGNAL(activated()), this, SLOT(calculate()));
   connect(sc_equal, SIGNAL(activated()), this, SLOT(calculate()));
 }
 
-void s21::CalcWindow::clearLines() {
+void s21::CalcWindow::clearAll() {
   ui_->line_expr->setText("");
   ui_->line_res->setText("");
+  ui_->widget_plot->clearGraphs();
+  ui_->widget_plot->replot();
 }
 
 void s21::CalcWindow::deleteLastSymbol() {
@@ -114,7 +111,7 @@ void s21::CalcWindow::createPlot() {
   double x_max = ui_->spin_box_max_horizontal->value();
   double y_min = ui_->spin_box_min_vertical->value();
   double y_max = ui_->spin_box_max_vertical->value();
-  std::vector<double> plot_limits = { x_min, x_max, y_min, y_max };
+  std::vector<double> plot_limits = {x_min, x_max, y_min, y_max};
   controller_.setXValue(ui_->double_spin_box_x->value());
   std::string expression = ui_->line_expr->text().toStdString();
   std::string result = controller_.calculate(expression);
@@ -141,5 +138,5 @@ void s21::CalcWindow::formatPlotLine() {
   ui_->widget_plot->graph(0)->setPen(pen);
   ui_->widget_plot->graph(0)->setLineStyle(QCPGraph::lsNone);
   ui_->widget_plot->graph(0)->setScatterStyle(
-      QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
+      QCPScatterStyle(QCPScatterStyle::ssDisc, 1.5));
 }

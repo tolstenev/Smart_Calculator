@@ -37,7 +37,7 @@ class CalcWindow : public QMainWindow {
 
  private slots:
   void printSymbols();
-  void clearLines();
+  void clearAll();
   void deleteLastSymbol();
   void calculate();
   void createPlot();

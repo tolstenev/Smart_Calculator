@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>413</width>
-    <height>724</height>
+    <width>415</width>
+    <height>725</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1067,7 +1067,7 @@ QDoubleSpinBox::down-button {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>413</width>
+     <width>415</width>
      <height>24</height>
     </rect>
    </property>

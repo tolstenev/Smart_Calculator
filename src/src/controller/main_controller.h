@@ -15,7 +15,8 @@ class CalcController {
     return model_.getResultString();
   };
 
-  std::pair<std::vector<double>, std::vector<double>> calculateDots(const std::string &expression, std::vector<double> plot_limits) {
+  std::pair<std::vector<double>, std::vector<double>> calculateDots(
+      const std::string &expression, std::vector<double> plot_limits) {
     model_.calculateDots(expression, plot_limits);
     return model_.getDots();
   };

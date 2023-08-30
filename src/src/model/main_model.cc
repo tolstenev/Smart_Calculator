@@ -1,6 +1,6 @@
 #include "main_model.h"
 
-
+#include <utility>
 
 s21::CalcModel::CalcModel() {
   initFunctions();
@@ -56,7 +56,8 @@ void s21::CalcModel::substituteExpression() {
 void s21::CalcModel::replaceInExpression(const std::string &from,
                                          const std::string &to) {
   size_t start_index = 0;
-  while ((start_index = expression_.find(from, start_index)) != std::string::npos) {
+  while ((start_index = expression_.find(from, start_index)) !=
+         std::string::npos) {
     expression_.replace(start_index, from.length(), to);
     start_index += to.length();
   }
@@ -148,7 +149,8 @@ bool s21::CalcModel::isVariable(size_t index) const {
 }
 
 int s21::CalcModel::isFunction(size_t &index) {
-  if (index + 4 < expression_.length() && expression_.substr(index, 5) == "log10") {
+  if (index + 4 < expression_.length() &&
+      expression_.substr(index, 5) == "log10") {
     index += 5;
     return static_cast<int>(Lexem::log10);
   }
@@ -381,6 +383,13 @@ void s21::CalcModel::calculate(const std::string &expression) {
   }
 }
 
+void s21::CalcModel::calculateDots(const std::string &expression,
+                                   std::vector<double> plot_limits) {
+  plot_.setPlotLimits(std::move(plot_limits));
+  calculate(expression);
+  plot_.calculateDots(this);
+};
+
 void s21::CalcModel::Plot::setPlotLimits(std::vector<double> plot_limits) {
   x_min_ = plot_limits[0];
   x_max_ = plot_limits[1];
@@ -391,16 +400,40 @@ void s21::CalcModel::Plot::setPlotLimits(std::vector<double> plot_limits) {
 void s21::CalcModel::Plot::calculateDots(CalcModel *model) {
   vector_x_.clear();
   vector_y_.clear();
-  double y_current = 0.0;
-  double x_current = 0.0;
-  double step = 1.0;
-  int steps = static_cast<int>((x_max_ - x_min_) / step);
-  for (int i = 0; i <= steps; ++i) {
-    x_current = x_min_ + i * step;
-    model->setXValue(x_current);
-    model->calculateExpression();
-    y_current = model->result_;
-    vector_x_.push_back(x_current);  // переделать на лист
-    vector_y_.push_back(y_current);
+  double step = (x_max_ - x_min_) / 289;
+  double delta_x = 0, delta_y = 0;
+  x_curr_ = x_min_;
+  x_prev_ = x_min_ - step;
+  y_prev_ = y_min_;
+  while (x_curr_ <= x_max_) {
+    x_curr_ = x_curr_ + step;
+    y_curr_ = calculateOneDot(x_curr_, x_curr_, step, model);
+    if (y_curr_ != 0 && y_curr_ >= y_min_ && y_curr_ <= y_max_) {
+      calculateDeltas(delta_x, delta_y);
+      while (delta_x > 1.5 && delta_y > 1.5) {
+        (delta_x > 1.5 || delta_y > 1.5) ? step /= 1.01 : step *= 1.01;
+        y_curr_ = calculateOneDot(x_curr_, x_prev_, step, model);
+        calculateDeltas(delta_x, delta_y);
+      }
+      x_prev_ = x_curr_;
+      y_prev_ = y_curr_;
+      vector_x_.push_back(x_curr_);
+      vector_y_.push_back(y_curr_);
+    }
   }
+}
+
+void s21::CalcModel::Plot::calculateDeltas(double &delta_x, double &delta_y) {
+  delta_x = x_curr_ - x_prev_;
+  delta_y = x_curr_ - y_prev_;
+}
+
+double s21::CalcModel::Plot::calculateOneDot(double &x_curr,
+                                             const double &x_prev,
+                                             const double &step,
+                                             CalcModel *model) {
+  x_curr = x_prev + step;
+  model->setXValue(x_curr);
+  model->calculateExpression();
+  return model->result_;
 }
