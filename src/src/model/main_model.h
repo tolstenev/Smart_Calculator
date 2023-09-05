@@ -22,16 +22,16 @@ class CalculatorModel {
 
  private:
   enum class Lexem : int {
-    sin = 1, cos, tan,
-    aSin, aCos, aTan,
-    sqrt, log, log10,
-    deg, mul, div, sum, sub, mod,
-    unaryMinus, brOpen,
-    num, num_x
+    kSin = 1, kCos, kTan,
+    kArcSin, kArcCos, kArcTan,
+    kSqrt, kLog, kLog10,
+    kDeg, kMul, kDiv, kSum, kSub, kMod,
+    kUnaryMinus, kOpenBrace,
+    kNumber, kVariableX
   };  // class Lexem
 
   enum class LexemType : int {
-    num, func, op
+    kTypeNumber, kTypeFunction, kTypeOperator
   };  // class LexemType
 
   class Token {
@@ -112,7 +112,7 @@ class CalculatorModel {
   bool IsClosingBrace(size_t index) const;
 
   void HandleX(size_t &index);
-  void HandleFunction(int func_type);
+  void HandleFunction(int type_function);
   void HandleOpeningBrace(size_t &index);
   void HandleClosingBrace(size_t &index);
   void HandleNumber(size_t &index);

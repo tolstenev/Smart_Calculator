@@ -11,7 +11,7 @@ class CalcTest : public testing::Test {
   CalculatorModel calc_;
   std::string error_ = "Error";
   std::string err_div_zero_ = "1/0";
-  std::string err_sqrt_oppos_ = "sqrt(-1)";
+  std::string err_sqrt_uncorrect_ = "sqrt(-1)";
   std::string err_abracadabra_ = "1234g43s;;";
   std::string simple_log_ = "log(4)";
   std::string simple_log_res_ = "0.60205999";
@@ -41,85 +41,85 @@ class CalcTest : public testing::Test {
   std::string mod_res_ = "1.588689";
   std::string graph_func_ = "1/X";
   std::string graph_func_fail_ = "cocos(X)";
-  std::vector<double> plot_limits_ = {-30, 30, -30, 30};
+  std::vector<double> plot_limits_ = {-30, 30, -100, 100};
   std::pair<std::list<double>, std::list<double>> dots_;
   std::list<double> dots_x_, dots_y_;
 };
 
-TEST_F(CalcTest, DivByZero) {
+TEST_F(CalcTest, DivisionByZeroFail) {
   calc_.Calculate(err_div_zero_);
   EXPECT_EQ(calc_.GetResultString(), error_);
 }
 
-TEST_F(CalcTest, sqrtOpp) {
-  calc_.Calculate(err_sqrt_oppos_);
+TEST_F(CalcTest, SqrtUncorrectFail) {
+  calc_.Calculate(err_sqrt_uncorrect_);
   EXPECT_EQ(calc_.GetResultString(), error_);
 }
 
-TEST_F(CalcTest, invExpr) {
+TEST_F(CalcTest, InvalidExpressionFail) {
   calc_.Calculate(err_abracadabra_);
   EXPECT_EQ(calc_.GetResultString(), error_);
 }
 
-TEST_F(CalcTest, SimpleLog) {
+TEST_F(CalcTest, SimpleLogSuccess) {
   calc_.Calculate(simple_log_);
   EXPECT_EQ(calc_.GetResultString(), simple_log_res_);
 }
 
-TEST_F(CalcTest, Multifold) {
+TEST_F(CalcTest, MultifoldSuccess) {
   calc_.Calculate(multifold_);
   EXPECT_EQ(calc_.GetResultString(), multifold_res_);
 }
 
-TEST_F(CalcTest, Functions) {
+TEST_F(CalcTest, FunctionsSuccess) {
   calc_.Calculate(functions_t_);
   EXPECT_EQ(calc_.GetResultString(), functions_res_);
 }
 
-TEST_F(CalcTest, Folded_funcs) {
+TEST_F(CalcTest, FoldedFunctionsSuccess) {
   calc_.Calculate(folded_funcs_);
   EXPECT_EQ(calc_.GetResultString(), folded_funcs_res_);
 }
 
-TEST_F(CalcTest, Exp_notation) {
+TEST_F(CalcTest, ExponentialNotationSuccess) {
   calc_.Calculate(exp_notation_);
   EXPECT_EQ(calc_.GetResultString(), exp_notation_res_);
 }
 
-TEST_F(CalcTest, expNSimple) {
+TEST_F(CalcTest, ExponentialNotationHardSuccess) {
   calc_.Calculate(exp_not_simple_);
   EXPECT_EQ(calc_.GetResultString(), exp_not_simple_res_);
 }
 
-TEST_F(CalcTest, degreeHard) {
+TEST_F(CalcTest, DegreeHardSuccess) {
   calc_.Calculate(degree_hard_);
   EXPECT_EQ(calc_.GetResultString(), degree_hard_res_);
 }
 
-TEST_F(CalcTest, twoTimesCalculation) {
+TEST_F(CalcTest, TwoTimesCalculationSuccess) {
   calc_.Calculate(degree_hard_);
   EXPECT_EQ(calc_.GetResultString(), degree_hard_res_);
   calc_.Calculate(functions_t_);
   EXPECT_EQ(calc_.GetResultString(), functions_res_);
 }
 
-TEST_F(CalcTest, degreeFuncs) {
+TEST_F(CalcTest, DegreeFunctionsSuccess) {
   calc_.Calculate(degree_funcs);
   EXPECT_EQ(calc_.GetResultString(), degree_funcs_res);
 }
 
-TEST_F(CalcTest, xStrEnableDouble) {
+TEST_F(CalcTest, VariableXSuccess) {
   calc_.SetXValue(x_d_);
   calc_.Calculate(x_str_main_);
   EXPECT_EQ(calc_.GetResultString(), x_str_res_);
 }
 
-TEST_F(CalcTest, modTest) {
+TEST_F(CalcTest, ModTestSuccess) {
   calc_.Calculate(mod_);
   EXPECT_EQ(calc_.GetResultString(), mod_res_);
 }
 
-TEST_F(CalcTest, graphTest) {
+TEST_F(CalcTest, PlotTestSuccess) {
   calc_.CalculateDots(graph_func_, plot_limits_);
   dots_ = calc_.GetDots();
   dots_x_ = dots_.first;
@@ -128,7 +128,7 @@ TEST_F(CalcTest, graphTest) {
   EXPECT_FALSE(dots_y_.empty());
 }
 
-TEST_F(CalcTest, graphTestFail) {
+TEST_F(CalcTest, PlotTestFail) {
   calc_.CalculateDots(graph_func_fail_, plot_limits_);
   EXPECT_EQ(calc_.GetResultString(), "Error");
   EXPECT_TRUE(dots_x_.empty());

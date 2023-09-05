@@ -18,15 +18,12 @@ GTEST_FLAGS		:= -lgtest
 GCOV_FLAGS		:= -fprofile-arcs -ftest-coverage
 REPORT      	:= coverage_report
 CURRENT_DIR 	:= $(abspath $(CURDIR))
-RUN_TEST    	:= ./$(MODEL_TEST_EXEC)
 
 .PHONY: tests copy_linter gcov_report check lint
 
-$(MODEL_TEST_EXEC): $(MODEL_SRC) $(MODEL_TEST_SRC)
+tests: $(MODEL_SRC) $(MODEL_HDR) $(MODEL_TEST_SRC)
 	$(CC) $(CPP_FLAGS) $(MODEL_SRC) $(MODEL_TEST_SRC) -o $(MODEL_TEST_EXEC) $(GTEST_FLAGS)
-
-tests: $(MODEL_TEST_EXEC) $(MODEL_SRC) $(MODEL_TEST_SRC)
-	$(RUN_TEST)
+	./$(MODEL_TEST_EXEC)
 
 copy_linter:
 	cp ../materials/linters/.clang-format tests/.clang-format
