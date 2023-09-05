@@ -1,26 +1,32 @@
-CC			:= gcc
-CPP_FLAGS	:= -std=c++17 -pedantic  -lstdc++
-MAIN		:= ./src/main.cc
-VIEW_HDR	:= ./src/view/main_window.h
-VIEW_SRC	:= ./src/view/main_window.cc
-CONTROL_HDR	:= ./src/controller/main_controller.h
-MODEL_HDR	:= ./src/model/main_model.cc
-MODEL_SRC	:= ./src/model/main_model.cc
-SRCS		:= $(VIEW_HDR) \
-			   $(VIEW_SRC) \
-			   $(CONTROL_HDR) \
-			   $(MODEL_HDR) \
-			   $(MODEL_SRC) \
-			   $(MAIN)
-TEST_MODEL	:= ./tests/test_model.cc
-TEST_EXEC	:= test.out
-TEST_FLAGS	:= -lgtest
+CC				:= gcc
+CPP_FLAGS		:= -std=c++17 -pedantic  -lstdc++
+MAIN			:= ./src/main.cc
+VIEW_HDR		:= ./src/view/main_window.h
+VIEW_SRC		:= ./src/view/main_window.cc
+CONTROLLER_HDR	:= ./src/controller/main_controller.h
+MODEL_HDR		:= ./src/model/main_model.cc
+MODEL_SRC		:= ./src/model/main_model.cc
+SRCS			:= $(VIEW_HDR) \
+			   		$(VIEW_SRC) \
+			   		$(CONTROLLER_HDR) \
+			   		$(MODEL_HDR) \
+			   		$(MODEL_SRC) \
+			   		$(MAIN)
+MODEL_TEST_SRC	:= ./tests/main_model_test.cc
+MODEL_TEST_EXEC	:= main_model_test.out
+GTEST_FLAGS		:= -lgtest
+GCOV_FLAGS		:= -fprofile-arcs -ftest-coverage
+REPORT      	:= coverage_report
+CURRENT_DIR 	:= $(abspath $(CURDIR))
+RUN_TEST    	:= ./$(MODEL_TEST_EXEC)
 
-.PHONY: test
+.PHONY: tests copy_linter gcov_report check lint
 
-test:
-	$(CC) $(CPP_FLAGS) $(MODEL_SRC) $(TEST_MODEL) -o $(TEST_EXEC) $(TEST_FLAGS)
-	./$(TEST_EXEC)
+$(MODEL_TEST_EXEC): $(MODEL_SRC) $(MODEL_TEST_SRC)
+	$(CC) $(CPP_FLAGS) $(MODEL_SRC) $(MODEL_TEST_SRC) -o $(MODEL_TEST_EXEC) $(GTEST_FLAGS)
+
+tests: $(MODEL_TEST_EXEC) $(MODEL_SRC) $(MODEL_TEST_SRC)
+	$(RUN_TEST)
 
 copy_linter:
 	cp ../materials/linters/.clang-format tests/.clang-format
@@ -30,15 +36,27 @@ copy_linter:
 	cp ../materials/linters/.clang-format src/rcs/.clang-format
 
 lint: copy_linter
-	clang-format -i $(SRCS) $(TEST_MODEL)
+	clang-format -i $(SRCS) $(MODEL_TEST_SRC)
 
 check: copy_linter
-	clang-format -n $(SRCS) $(TEST_MODEL)
+	clang-format -n $(SRCS) $(MODEL_TEST_SRC)
+
+gcov_report:
+	@clear
+	$(CC) $(CPP_FLAGS) $(GTEST_FLAGS) $(GCOV_FLAGS) $(MODEL_TEST_SRC) $(MODEL_SRC) -o $(REPORT).out
+	./$(REPORT).out
+	lcov -t "$(REPORT)" -o $(REPORT).info -c -d . --ignore-errors mismatch --no-external --exclude '$(CURRENT_DIR)/src/rcs/*'
+	genhtml -o $(REPORT) $(REPORT).info
+	rm -rf ./*.gcno ./*.gcda ./$(REPORT).*
+	open ./$(REPORT)/index.html
 
 clean:
-	rm -rf $(TEST_EXEC)
+	rm -rf $(MODEL_TEST_EXEC)
 	rm -rf tests/.clang-format
 	rm -rf src/model/.clang-format
 	rm -rf src/controller/.clang-format
 	rm -rf src/view/.clang-format
 	rm -rf src/rcs/.clang-format
+	rm -rf $(REPORT)
+	rm -rf $(REPORT).info
+	rm -rf *.gcda *.gcno

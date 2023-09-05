@@ -2,25 +2,22 @@
 #define SRC_MODEL_MAIN_MODEL_H_
 
 #include <sstream>
-#include <map>
-#include <queue>
 #include <list>
-#include <unordered_map>
 #include <string>
-#include <iostream>
+#include <unordered_map>
 #include "../rcs/exprtk.hpp"
 
 namespace s21 {
-class CalcModel {
+class CalculatorModel {
  public:
-  CalcModel();
+  CalculatorModel();
 
-  void setXValue(double x) { x_value_ = x; };
-  void calculate(const std::string &expression);
-  std::string getResultString() { return result_string_; };
-  void calculateDots(const std::string &expression, std::vector<double> plot_limits);
-  std::pair<std::list<double>, std::list<double>> getDots() {
-    return { plot_.getListX(), plot_.getListY() };
+  void SetXValue(double x) { x_value_ = x; };
+  void Calculate(const std::string &expression);
+  std::string GetResultString() { return result_string_; };
+  void CalculateDots(const std::string &expression, std::vector<double> plot_limits);
+  std::pair<std::list<double>, std::list<double>> GetDots() {
+    return {plot_.GetListX(), plot_.GetListY() };
   };
 
  private:
@@ -33,43 +30,40 @@ class CalcModel {
     num, num_x
   };  // class Lexem
 
-  enum class LType : int {
+  enum class LexemType : int {
     num, func, op
-  };  // class LType
+  };  // class LexemType
 
   class Token {
    public:
-    Token() = default;
-    Token(LType type, Lexem name)
+    Token(LexemType type, Lexem name)
         : type_(type), name_(name), value_{} {}
-    Token(LType type, Lexem name, double value)
+    Token(LexemType type, Lexem name, double value)
         : type_(type), name_(name), value_(value) {}
-    LType getType() const { return type_; }
-    Lexem getName() const { return name_; }
-    double getValue() const { return value_; }
+    LexemType GetType() const { return type_; }
+    Lexem GetName() const { return name_; }
+    double GetValue() const { return value_; }
 
    private:
-    LType type_{};
+    LexemType type_{};
     Lexem name_{};
     double value_{};
   };  // class Token
 
   class Plot {
    public:
-    void setPlotLimits(std::vector<double> plot_limits);
-    void initializeData();
-    bool isValidDot() const;
-    void addDotToList();
-    void updatePreviousValues();
-    void adjustDot(CalcModel *model);
-    void calculateDots(CalcModel *model);
-    void calculateOneDot (const double &x_prev, CalcModel *model);
-    void calculateDeltas();
-    std::list<double> getListX() { return list_x_; }
-    std::list<double> getListY() { return list_y_; }
-    std::pair<std::list<double>, std::list<double>> getDots() {
-      return {list_x_, list_y_};
-    };
+    void SetPlotLimits(std::vector<double> plot_limits);
+    void CalculateDots(CalculatorModel *model);
+    void InitializeData();
+    void AdjustDot(CalculatorModel *model);
+    void CalculateOneDot (const double &x_prev, CalculatorModel *model);
+    bool IsValidDot() const;
+    void CalculateDeltas();
+    void UpdatePreviousValues();
+    void AddDotToList();
+
+    std::list<double> GetListX() { return list_x_; }
+    std::list<double> GetListY() { return list_y_; }
 
    private:
     double x_min_{};
@@ -80,7 +74,8 @@ class CalcModel {
     double x_prev_{};
     double y_curr_{};
     double y_prev_{};
-    double step_{};
+    double x_step_{};
+    double y_step_{};
     double delta_x_{};
     double delta_y_{};
     std::list<double> list_x_{};
@@ -90,8 +85,8 @@ class CalcModel {
   Plot plot_;
   std::string expression_{};
   std::string result_string_ = "Error";
-  double x_value_{};
   double result_{};
+  double x_value_{};
   bool expect_unary_operator_{};
   std::vector<Token> postfix_{};
   std::unordered_map<std::string, Lexem> functions_;
@@ -99,45 +94,53 @@ class CalcModel {
   std::unordered_map<Lexem, int> priorities_;
   std::stack<Token> stack_of_operators_;
 
-  void setExpression(const std::string &expression) { expression_ = expression; };
-  bool isExpressionValid();
-  void convertExpressionToPostfix();
-  void calculateExpression();
-  void initFunctions();
-  void initOperators();
-  void initPriorities();
-  void substituteExpression();
-  void replaceInExpression(const std::string &from, const std::string &to);
-  int getPriority(const Lexem &lexem);
-  double extractDigit(size_t &pos);
-  Lexem charToLexem(const char &oper);
-  void handleVariable(size_t &index);
-  void handleFunction(int func_type);
-  void handleOpeningBrace(size_t &index);
-  void handleClosingBrace(size_t &index);
-  void handleNumeric(size_t &index);
-  void handleOperator(size_t &index);
-  bool isVariable(size_t index) const;
-  int isFunction(size_t &index);
-  bool isOpeningBrace(size_t index) const;
-  bool isClosingBrace(size_t index) const;
-  bool isNumeric(size_t index) const;
-  void stackOfOperatorsToVector();
-  void calculatePostfix();
-  bool isX(const Token &token);
-  bool isNumber(const Token &token);
-  bool isFunction(const Token &token);
-  bool isOperation(const Token &token);
-  void handleNumber(const Token &token, std::stack<double> &numbers);
-  void handleFunction(const Token &token, std::stack<double> &numbers);
-  void handleOperation(const Token &token, std::stack<double> &numbers);
-  void convertResultToString();
-  bool isResultError() const;
-  void setAccuracy();
-  void trimTrailingZeros();
+  void InitFunctions();
+  void InitOperators();
+  void InitPriorities();
+
+  void SetExpression(const std::string &expression) { expression_ = expression; };
+  bool IsExpressionValid();
+  void SubstituteExpression();
+  void ReplaceInExpression(const std::string &from, const std::string &to);
+  void ConvertExpressionToPostfix();
   void ClearStackOfOperators();
 
-};  // class CalcModel
+  bool IsNumber(size_t index) const;
+  bool IsX(size_t index) const;
+  int IsFunction(size_t &index);
+  bool IsOpeningBrace(size_t index) const;
+  bool IsClosingBrace(size_t index) const;
+
+  void HandleX(size_t &index);
+  void HandleFunction(int func_type);
+  void HandleOpeningBrace(size_t &index);
+  void HandleClosingBrace(size_t &index);
+  void HandleNumber(size_t &index);
+  void HandleOperator(size_t &index);
+
+  double ExtractDigit(size_t &pos);
+  Lexem CharToLexem(const char &oper);
+  int GetPriority(const Lexem &lexem);
+
+  void StackOfOperatorsToVector();
+  void CalculateExpression();
+  void CalculatePostfix();
+
+  bool IsNumericToken(const Token &token);
+  bool IsXToken(const Token &token);
+  bool IsFunctionToken(const Token &token);
+  bool IsOperationToken(const Token &token);
+
+  void HandleNumericToken(const Token &token, std::stack<double> &numbers);
+  void HandleFunctionToken(const Token &token, std::stack<double> &numbers);
+  void HandleOperationToken(const Token &token, std::stack<double> &numbers);
+
+  void ConvertResultToString();
+  bool IsResultError() const;
+  void SetAccuracy();
+  void TrimTrailingZeros();
+
+};  // class CalculatorModel
 }  // namespace s21
 
 #endif  // SRC_MODEL_MAIN_MODEL_H_

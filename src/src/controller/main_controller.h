@@ -1,29 +1,33 @@
 #ifndef SRC_CONTROLLER_MAIN_CONTROLLER_H_
 #define SRC_CONTROLLER_MAIN_CONTROLLER_H_
 
+#include <utility>
+
 #include "../model/main_model.h"
 
 namespace s21 {
-class CalcController {
+
+class CalculatorController {
  public:
-  CalcController(CalcModel &model) : model_(model) {}
+  CalculatorController(CalculatorModel &model) : model_(model) {}
 
-  void setXValue(double x) { model_.setXValue(x); };
+  void SetXValue(double x) { model_.SetXValue(x); };
 
-  std::string calculate(const std::string &expression) {
-    model_.calculate(expression);
-    return model_.getResultString();
+  std::string Calculate(const std::string &expression) {
+    model_.Calculate(expression);
+    return model_.GetResultString();
   };
 
-  std::pair<std::list<double>, std::list<double>> calculateDots(
+  std::pair<std::list<double>, std::list<double>> CalculateDots(
       const std::string &expression, std::vector<double> plot_limits) {
-    model_.calculateDots(expression, plot_limits);
-    return model_.getDots();
+    model_.CalculateDots(expression, std::move(plot_limits));
+    return model_.GetDots();
   };
 
  private:
-  CalcModel &model_;
-};  // class CalcController
+  CalculatorModel &model_;
+
+};  // class CalculatorController
 }  // namespace s21
 
 #endif  // SRC_CONTROLLER_MAIN_CONTROLLER_H_

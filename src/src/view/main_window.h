@@ -1,5 +1,5 @@
-#ifndef SRC_VIEW_MAINWINDOW_H
-#define SRC_VIEW_MAINWINDOW_H
+#ifndef SRC_VIEW_MAIN_WINDOW_H
+#define SRC_VIEW_MAIN_WINDOW_H
 
 #include <QKeyEvent>
 #include <QMainWindow>
@@ -18,32 +18,31 @@ QT_END_NAMESPACE
 
 namespace s21 {
 
-class CalcWindow : public QMainWindow {
+class CalculatorWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  CalcWindow(CalcController &controller, QWidget *parent = nullptr);
-
-  ~CalcWindow();
+  CalculatorWindow(CalculatorController &controller, QWidget *parent = nullptr);
+  ~CalculatorWindow();
 
   void keyPressEvent(QKeyEvent *event) override;
 
  private:
   Ui::MainWindow *ui_;
-  CalcController &controller_;
-  void connectSlots();
-  void initPlot();
-  void formatPlotLine();
+  CalculatorController &controller_;
+  void ConnectSlots();
+  void InitPlot();
+  void FormatPlotLine();
 
  private slots:
-  void printSymbols();
-  void clearAll();
-  void deleteLastSymbol();
-  void calculate();
-  void createPlot();
+  void PrintSymbols();
+  void ClearAll();
+  void DeleteLastSymbol();
+  void Calculate();
+  void CreatePlot();
 
 };  // class CalculatorWindow
 
 }  // namespace s21
 
-#endif  // SRC_VIEW_MAINWINDOW_H
+#endif  // SRC_VIEW_MAIN_WINDOW_H

@@ -2,19 +2,20 @@
 
 #include "./ui_main_window.h"
 
-s21::CalcWindow::CalcWindow(CalcController &controller, QWidget *parent)
+s21::CalculatorWindow::CalculatorWindow(CalculatorController &controller,
+                                        QWidget *parent)
     : QMainWindow(parent), ui_(new Ui::MainWindow), controller_(controller) {
   ui_->setupUi(this);
   setWindowTitle("SmartCalc by Yonn Argelia @yonnarge");
   setFixedSize(415, 725);
-  connectSlots();
-  initPlot();
+  ConnectSlots();
+  InitPlot();
 }
 
-void s21::CalcWindow::initPlot() {
+void s21::CalculatorWindow::InitPlot() {
   QCPGraph *graph = ui_->widget_plot->addGraph();
-  QColor transparentColor(0, 0, 0, 0);
-  ui_->widget_plot->setBackground(QBrush(transparentColor));
+  QColor transparent_color(0, 0, 0, 0);
+  ui_->widget_plot->setBackground(QBrush(transparent_color));
 
   ui_->widget_plot->xAxis->setBasePen(QPen(Qt::gray));
   ui_->widget_plot->yAxis->setBasePen(QPen(Qt::gray));
@@ -24,9 +25,9 @@ void s21::CalcWindow::initPlot() {
   ui_->widget_plot->yAxis->setTickLabelColor(Qt::gray);
 }
 
-s21::CalcWindow::~CalcWindow() { delete ui_; }
+s21::CalculatorWindow::~CalculatorWindow() { delete ui_; }
 
-void s21::CalcWindow::keyPressEvent(QKeyEvent *event) {
+void s21::CalculatorWindow::keyPressEvent(QKeyEvent *event) {
   if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_W) {
     close();  // Закрытие окна по сочетанию клавиш Cmd+W
   } else {
@@ -34,13 +35,13 @@ void s21::CalcWindow::keyPressEvent(QKeyEvent *event) {
   }
 }
 
-void s21::CalcWindow::printSymbols() {
+void s21::CalculatorWindow::PrintSymbols() {
   auto *button = qobject_cast<QPushButton *>(sender());
   QString new_result = ui_->line_expr->text() + button->text();
   ui_->line_expr->setText(new_result);
 }
 
-void s21::CalcWindow::connectSlots() {
+void s21::CalculatorWindow::ConnectSlots() {
   QShortcut *sc_equal = new QShortcut(QKeySequence(Qt::Key_Equal), this);
   std::list<QPushButton *> entering_buttons = {
       ui_->button_0,
@@ -76,50 +77,50 @@ void s21::CalcWindow::connectSlots() {
   };
 
   for (auto button : entering_buttons) {
-    connect(button, SIGNAL(clicked()), this, SLOT(printSymbols()));
+    connect(button, SIGNAL(clicked()), this, SLOT(PrintSymbols()));
   }
 
-  connect(ui_->button_ac, SIGNAL(clicked()), this, SLOT(clearAll()));
-  connect(ui_->button_bs, SIGNAL(clicked()), this, SLOT(deleteLastSymbol()));
-  connect(ui_->button_plot, SIGNAL(clicked()), this, SLOT(createPlot()));
-  connect(ui_->button_calculate, SIGNAL(clicked()), this, SLOT(calculate()));
-  connect(sc_equal, SIGNAL(activated()), this, SLOT(calculate()));
+  connect(ui_->button_ac, SIGNAL(clicked()), this, SLOT(ClearAll()));
+  connect(ui_->button_bs, SIGNAL(clicked()), this, SLOT(DeleteLastSymbol()));
+  connect(ui_->button_plot, SIGNAL(clicked()), this, SLOT(CreatePlot()));
+  connect(ui_->button_calculate, SIGNAL(clicked()), this, SLOT(Calculate()));
+  connect(sc_equal, SIGNAL(activated()), this, SLOT(Calculate()));
 }
 
-void s21::CalcWindow::clearAll() {
+void s21::CalculatorWindow::ClearAll() {
   ui_->line_expr->setText("");
   ui_->line_res->setText("");
   ui_->widget_plot->clearGraphs();
   ui_->widget_plot->replot();
 }
 
-void s21::CalcWindow::deleteLastSymbol() {
+void s21::CalculatorWindow::DeleteLastSymbol() {
   QString new_result = ui_->line_expr->text();
   new_result = new_result.left(new_result.length() - 1);
   ui_->line_expr->setText(new_result);
 }
 
-void s21::CalcWindow::calculate() {
-  controller_.setXValue(ui_->double_spin_box_x->value());
+void s21::CalculatorWindow::Calculate() {
+  controller_.SetXValue(ui_->double_spin_box_x->value());
   std::string expression = ui_->line_expr->text().toStdString();
-  std::string result = controller_.calculate(expression);
+  std::string result = controller_.Calculate(expression);
   ui_->line_res->setText(QString::fromStdString(result));
 }
 
-void s21::CalcWindow::createPlot() {
+void s21::CalculatorWindow::CreatePlot() {
   double x_min = ui_->spin_box_min_horizontal->value();
   double x_max = ui_->spin_box_max_horizontal->value();
   double y_min = ui_->spin_box_min_vertical->value();
   double y_max = ui_->spin_box_max_vertical->value();
   std::vector<double> plot_limits = {x_min, x_max, y_min, y_max};
-  controller_.setXValue(ui_->double_spin_box_x->value());
+  controller_.SetXValue(ui_->double_spin_box_x->value());
   std::string expression = ui_->line_expr->text().toStdString();
-  std::string result = controller_.calculate(expression);
+  std::string result = controller_.Calculate(expression);
 
   ui_->line_res->setText(QString::fromStdString(result));
 
   std::pair<std::list<double>, std::list<double>> dots =
-      controller_.calculateDots(expression, plot_limits);
+      controller_.CalculateDots(expression, plot_limits);
 
   ui_->widget_plot->clearGraphs();
 
@@ -129,11 +130,11 @@ void s21::CalcWindow::createPlot() {
   QList<double> dots_x(dots.first.begin(), dots.first.end());
   QList<double> dots_y(dots.second.begin(), dots.second.end());
   ui_->widget_plot->graph(0)->addData(dots_x, dots_y, true);
-  formatPlotLine();
+  FormatPlotLine();
   ui_->widget_plot->replot();
 }
 
-void s21::CalcWindow::formatPlotLine() {
+void s21::CalculatorWindow::FormatPlotLine() {
   QPen pen(Qt::red);
   ui_->widget_plot->graph(0)->setPen(pen);
   ui_->widget_plot->graph(0)->setLineStyle(QCPGraph::lsNone);
