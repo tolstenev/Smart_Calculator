@@ -85,7 +85,7 @@ class CalculatorModel {
   Plot plot_;
   std::string expression_{};
   std::string result_string_ = "Error";
-  double result_{};
+  double result_ = std::numeric_limits<double>::infinity();
   double x_value_{};
   bool expect_unary_operator_{};
   std::vector<Token> postfix_{};

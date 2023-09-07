@@ -3,17 +3,20 @@
 #include <utility>
 
 s21::CalculatorModel::CalculatorModel() {
+  result_string_ = "Error";
+  result_ = std::numeric_limits<double>::infinity();
   InitFunctions();
   InitOperators();
   InitPriorities();
 }
 
 void s21::CalculatorModel::InitFunctions() {
-  functions_ = {
-      {"X", Lexem::kVariableX},   {"-", Lexem::kUnaryMinus}, {"sin", Lexem::kSin},
-      {"cos", Lexem::kCos},   {"tan", Lexem::kTan},      {"asin", Lexem::kArcSin},
-      {"acos", Lexem::kArcCos}, {"atan", Lexem::kArcTan},    {"sqrt", Lexem::kSqrt},
-      {"log", Lexem::kLog},   {"log10", Lexem::kLog10}};
+  functions_ = {{"X", Lexem::kVariableX}, {"-", Lexem::kUnaryMinus},
+                {"sin", Lexem::kSin},     {"cos", Lexem::kCos},
+                {"tan", Lexem::kTan},     {"asin", Lexem::kArcSin},
+                {"acos", Lexem::kArcCos}, {"atan", Lexem::kArcTan},
+                {"sqrt", Lexem::kSqrt},   {"log", Lexem::kLog},
+                {"log10", Lexem::kLog10}};
 }
 
 void s21::CalculatorModel::InitOperators() {
@@ -22,12 +25,13 @@ void s21::CalculatorModel::InitOperators() {
 }
 
 void s21::CalculatorModel::InitPriorities() {
-  priorities_ = {{Lexem::kSin, 0},        {Lexem::kCos, 0},  {Lexem::kTan, 0},
-                 {Lexem::kArcSin, 0},       {Lexem::kArcCos, 0}, {Lexem::kArcTan, 0},
-                 {Lexem::kSqrt, 0},       {Lexem::kLog, 0},  {Lexem::kLog10, 0},
-                 {Lexem::kUnaryMinus, 1}, {Lexem::kDeg, 2},  {Lexem::kMul, 3},
-                 {Lexem::kDiv, 3},        {Lexem::kMod, 3},  {Lexem::kSum, 4},
-                 {Lexem::kSub, 4}};
+  priorities_ = {
+      {Lexem::kSin, 0},        {Lexem::kCos, 0},    {Lexem::kTan, 0},
+      {Lexem::kArcSin, 0},     {Lexem::kArcCos, 0}, {Lexem::kArcTan, 0},
+      {Lexem::kSqrt, 0},       {Lexem::kLog, 0},    {Lexem::kLog10, 0},
+      {Lexem::kUnaryMinus, 1}, {Lexem::kDeg, 2},    {Lexem::kMul, 3},
+      {Lexem::kDiv, 3},        {Lexem::kMod, 3},    {Lexem::kSum, 4},
+      {Lexem::kSub, 4}};
 }
 
 void s21::CalculatorModel::Calculate(const std::string &expression) {
@@ -116,7 +120,8 @@ bool s21::CalculatorModel::IsNumber(size_t index) const {
 }
 
 void s21::CalculatorModel::HandleNumber(size_t &index) {
-  postfix_.emplace_back(LexemType::kTypeNumber, Lexem::kNumber, ExtractDigit(index));
+  postfix_.emplace_back(LexemType::kTypeNumber, Lexem::kNumber,
+                        ExtractDigit(index));
   expect_unary_operator_ = false;
 }
 
@@ -162,7 +167,8 @@ int s21::CalculatorModel::IsFunction(size_t &index) {
 }
 
 void s21::CalculatorModel::HandleFunction(int type_function) {
-  stack_of_operators_.emplace(LexemType::kTypeFunction, static_cast<Lexem>(type_function));
+  stack_of_operators_.emplace(LexemType::kTypeFunction,
+                              static_cast<Lexem>(type_function));
   expect_unary_operator_ = false;
 }
 
@@ -209,7 +215,8 @@ void s21::CalculatorModel::HandleOperator(size_t &index) {
   expect_unary_operator_ = true;
 }
 
-s21::CalculatorModel::Lexem s21::CalculatorModel::CharToLexem(const char& oper_candidate) {
+s21::CalculatorModel::Lexem s21::CalculatorModel::CharToLexem(
+    const char &oper_candidate) {
   Lexem lex;
   auto it = operators_.find(oper_candidate);
   if (it != operators_.end()) {
@@ -249,12 +256,6 @@ void s21::CalculatorModel::CalculatePostfix() {
   }
   if (numbers.size() == 1) {
     result_ = numbers.top();
-  } else {
-    // Calculation error.
-    // More than 1 number in stack after calculation.
-    // Incorrect handling tokens or expression_ string.
-    // Set NaN to result_ that will be handle in IsResultError()
-    result_ = std::numeric_limits<double>::quiet_NaN();
   }
 }
 
@@ -326,12 +327,7 @@ void s21::CalculatorModel::HandleFunctionToken(const Token &token,
 
 void s21::CalculatorModel::HandleOperationToken(const Token &token,
                                                 std::stack<double> &numbers) {
-  if (numbers.size() < 2) {
-    // Calculation error.
-    // Amount of openands in stack for binary operations is less than 2.
-    // Set NaN to result_ that will be handle in IsResultError()
-    result_ = std::numeric_limits<double>::quiet_NaN();
-  } else {
+  if (numbers.size() > 2) {
     double rhs = numbers.top();
     numbers.pop();
     double lhs = numbers.top();

@@ -1,3 +1,5 @@
+NAME			:= YonnCalc
+
 CC				:= gcc
 CPP_FLAGS		:= -std=c++17 -pedantic  -lstdc++
 MAIN			:= ./src/main.cc
@@ -18,8 +20,43 @@ GTEST_FLAGS		:= -lgtest
 GCOV_FLAGS		:= -fprofile-arcs -ftest-coverage
 REPORT      	:= coverage_report
 CURRENT_DIR 	:= $(abspath $(CURDIR))
+INSTALL_DIR 	:= $(HOME)/Desktop
+OS := $(shell uname -s)
 
-.PHONY: tests copy_linter gcov_report check lint
+.PHONY: install tests copy_linter gcov_report check lint
+
+install:
+	mkdir build
+	cd build && cmake ../CMakeLists.txt && make
+ifeq ($(OS),Darwin)
+	mv ./build/$(NAME).app "$(INSTALL_DIR)"
+else
+	mv ./build/$(NAME) "$(INSTALL_DIR)"
+endif
+
+open:
+ifeq ($(OS),Darwin)
+	open $(INSTALL_DIR)/$(NAME).app
+else
+	xdg-open $(INSTALL_DIR)/$(NAME)
+endif
+
+uninstall:
+	rm -rf ./build
+
+dvi:
+ifeq ($(OS),Darwin)
+	open ./reference.html
+else
+	xdg-open ./reference.html
+endif
+
+dvi_rus:
+ifeq ($(OS),Darwin)
+	open ./reference_rus.html
+else
+	xdg-open ./reference_rus.html
+endif
 
 tests: $(MODEL_SRC) $(MODEL_HDR) $(MODEL_TEST_SRC)
 	$(CC) $(CPP_FLAGS) $(MODEL_SRC) $(MODEL_TEST_SRC) -o $(MODEL_TEST_EXEC) $(GTEST_FLAGS)
@@ -48,6 +85,7 @@ gcov_report:
 	open ./$(REPORT)/index.html
 
 clean:
+	rm -rf build
 	rm -rf $(MODEL_TEST_EXEC)
 	rm -rf tests/.clang-format
 	rm -rf src/model/.clang-format
