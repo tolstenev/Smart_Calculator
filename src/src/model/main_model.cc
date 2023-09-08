@@ -104,15 +104,19 @@ void s21::CalculatorModel::ConvertExpressionToPostfix() {
       HandleOperator(index);
     }
   }
-  while (!stack_of_operators_.empty()) {
-    StackOfOperatorsToVector();
+  while (StackOfOperatorsIsNotEmpty()) {
+      MoveOperatorsFromStackToVector();
   }
 }
 
 void s21::CalculatorModel::ClearStackOfOperators() {
-  while (!stack_of_operators_.empty()) {
+  while (StackOfOperatorsIsNotEmpty()) {
     stack_of_operators_.pop();
   }
+}
+
+bool s21::CalculatorModel::StackOfOperatorsIsNotEmpty() {
+    return !stack_of_operators_.empty();
 }
 
 bool s21::CalculatorModel::IsNumber(size_t index) const {
@@ -120,8 +124,7 @@ bool s21::CalculatorModel::IsNumber(size_t index) const {
 }
 
 void s21::CalculatorModel::HandleNumber(size_t &index) {
-  postfix_.emplace_back(LexemType::kTypeNumber, Lexem::kNumber,
-                        ExtractDigit(index));
+  postfix_.emplace_back(LexemType::kTypeNumber, Lexem::kNumber, ExtractDigit(index));
   expect_unary_operator_ = false;
 }
 
@@ -167,8 +170,7 @@ int s21::CalculatorModel::IsFunction(size_t &index) {
 }
 
 void s21::CalculatorModel::HandleFunction(int type_function) {
-  stack_of_operators_.emplace(LexemType::kTypeFunction,
-                              static_cast<Lexem>(type_function));
+  stack_of_operators_.emplace(LexemType::kTypeFunction, static_cast<Lexem>(type_function));
   expect_unary_operator_ = false;
 }
 
@@ -188,11 +190,11 @@ bool s21::CalculatorModel::IsClosingBrace(size_t index) const {
 
 void s21::CalculatorModel::HandleClosingBrace(size_t &index) {
   ++index;
-  while (!stack_of_operators_.empty() &&
+  while (StackOfOperatorsIsNotEmpty() &&
          stack_of_operators_.top().GetName() != Lexem::kOpenBrace) {
-    StackOfOperatorsToVector();
+      MoveOperatorsFromStackToVector();
   }
-  if (!stack_of_operators_.empty() &&
+  if (StackOfOperatorsIsNotEmpty() &&
       stack_of_operators_.top().GetName() == Lexem::kOpenBrace) {
     stack_of_operators_.pop();
   }
@@ -201,7 +203,7 @@ void s21::CalculatorModel::HandleClosingBrace(size_t &index) {
 
 void s21::CalculatorModel::HandleOperator(size_t &index) {
   Lexem handling_operator = CharToLexem(expression_[index++]);
-  while (!stack_of_operators_.empty() &&
+  while (StackOfOperatorsIsNotEmpty() &&
          stack_of_operators_.top().GetName() != Lexem::kOpenBrace &&
          GetPriority(stack_of_operators_.top().GetName()) <=
              GetPriority(handling_operator)) {
@@ -209,7 +211,7 @@ void s21::CalculatorModel::HandleOperator(size_t &index) {
         stack_of_operators_.top().GetName() == Lexem::kDeg) {
       break;
     }
-    StackOfOperatorsToVector();
+      MoveOperatorsFromStackToVector();
   }
   stack_of_operators_.emplace(LexemType::kTypeOperator, handling_operator);
   expect_unary_operator_ = true;
@@ -217,21 +219,14 @@ void s21::CalculatorModel::HandleOperator(size_t &index) {
 
 s21::CalculatorModel::Lexem s21::CalculatorModel::CharToLexem(
     const char &oper_candidate) {
-  Lexem lex;
-  auto it = operators_.find(oper_candidate);
-  if (it != operators_.end()) {
-    lex = it->second;
-  } else {
-    lex = Lexem::kOpenBrace;
-  }
-  return lex;
+  return operators_.at(oper_candidate);
 }
 
 int s21::CalculatorModel::GetPriority(const Lexem &lexem) {
   return priorities_.at(lexem);
 }
 
-void s21::CalculatorModel::StackOfOperatorsToVector() {
+void s21::CalculatorModel::MoveOperatorsFromStackToVector() {
   postfix_.push_back(stack_of_operators_.top());
   stack_of_operators_.pop();
 }
@@ -327,7 +322,7 @@ void s21::CalculatorModel::HandleFunctionToken(const Token &token,
 
 void s21::CalculatorModel::HandleOperationToken(const Token &token,
                                                 std::stack<double> &numbers) {
-  if (numbers.size() > 2) {
+  if (numbers.size() >= 2) {
     double rhs = numbers.top();
     numbers.pop();
     double lhs = numbers.top();
@@ -428,8 +423,6 @@ void s21::CalculatorModel::Plot::AdjustDot(CalculatorModel *model) {
     while (delta_x_ > x_step_ && delta_y_ > y_step_) {
       if (delta_x_ > x_step_ || delta_y_ > y_step_) {
         x_step_ /= 1.01;
-      } else {
-        x_step_ *= 1.01;
       }
       CalculateOneDot(x_prev_, model);
       CalculateDeltas();

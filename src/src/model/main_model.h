@@ -84,8 +84,8 @@ class CalculatorModel {
 
   Plot plot_;
   std::string expression_{};
-  std::string result_string_ = "Error";
-  double result_ = std::numeric_limits<double>::infinity();
+  std::string result_string_{};
+  double result_{};
   double x_value_{};
   bool expect_unary_operator_{};
   std::vector<Token> postfix_{};
@@ -104,6 +104,7 @@ class CalculatorModel {
   void ReplaceInExpression(const std::string &from, const std::string &to);
   void ConvertExpressionToPostfix();
   void ClearStackOfOperators();
+  bool StackOfOperatorsIsNotEmpty();
 
   bool IsNumber(size_t index) const;
   bool IsX(size_t index) const;
@@ -122,7 +123,7 @@ class CalculatorModel {
   Lexem CharToLexem(const char &oper);
   int GetPriority(const Lexem &lexem);
 
-  void StackOfOperatorsToVector();
+  void MoveOperatorsFromStackToVector();
   void CalculateExpression();
   void CalculatePostfix();
 
