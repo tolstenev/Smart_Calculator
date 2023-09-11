@@ -145,7 +145,7 @@
         <string>log(</string>
        </property>
        <property name="shortcut">
-        <string>L, L</string>
+        <string>L, O</string>
        </property>
       </widget>
      </item>
@@ -601,7 +601,7 @@
         <string>sin(</string>
        </property>
        <property name="shortcut">
-        <string>S</string>
+        <string>S, I</string>
        </property>
       </widget>
      </item>
@@ -617,7 +617,7 @@
         <string>sqrt(</string>
        </property>
        <property name="shortcut">
-        <string>Q</string>
+        <string>S, Q</string>
        </property>
       </widget>
      </item>
