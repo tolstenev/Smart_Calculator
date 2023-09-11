@@ -12,6 +12,7 @@ class CalcTest : public testing::Test {
   std::string error_ = "Error";
   std::string err_div_zero_ = "1/0";
   std::string err_sqrt_uncorrect_ = "sqrt(-1)";
+  std::string err_expr_uncorrect_ = "abs(-1)";
   std::string err_abracadabra_ = "1234g43s;;";
   std::string simple_log_ = "log(4)";
   std::string simple_log_res_ = "0.60205999";
@@ -53,6 +54,11 @@ TEST_F(CalcTest, DivisionByZeroFail) {
 
 TEST_F(CalcTest, SqrtUncorrectFail) {
   calc_.Calculate(err_sqrt_uncorrect_);
+  EXPECT_EQ(calc_.GetResultString(), error_);
+}
+
+TEST_F(CalcTest, ExpressionUncorrectFail) {
+  calc_.Calculate(err_expr_uncorrect_);
   EXPECT_EQ(calc_.GetResultString(), error_);
 }
 

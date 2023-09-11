@@ -105,7 +105,7 @@ void s21::CalculatorModel::ConvertExpressionToPostfix() {
     }
   }
   while (StackOfOperatorsIsNotEmpty()) {
-      MoveOperatorsFromStackToVector();
+    MoveOperatorsFromStackToVector();
   }
 }
 
@@ -116,7 +116,7 @@ void s21::CalculatorModel::ClearStackOfOperators() {
 }
 
 bool s21::CalculatorModel::StackOfOperatorsIsNotEmpty() {
-    return !stack_of_operators_.empty();
+  return !stack_of_operators_.empty();
 }
 
 bool s21::CalculatorModel::IsNumber(size_t index) const {
@@ -124,7 +124,8 @@ bool s21::CalculatorModel::IsNumber(size_t index) const {
 }
 
 void s21::CalculatorModel::HandleNumber(size_t &index) {
-  postfix_.emplace_back(LexemType::kTypeNumber, Lexem::kNumber, ExtractDigit(index));
+  postfix_.emplace_back(LexemType::kTypeNumber, Lexem::kNumber,
+                        ExtractDigit(index));
   expect_unary_operator_ = false;
 }
 
@@ -170,7 +171,8 @@ int s21::CalculatorModel::IsFunction(size_t &index) {
 }
 
 void s21::CalculatorModel::HandleFunction(int type_function) {
-  stack_of_operators_.emplace(LexemType::kTypeFunction, static_cast<Lexem>(type_function));
+  stack_of_operators_.emplace(LexemType::kTypeFunction,
+                              static_cast<Lexem>(type_function));
   expect_unary_operator_ = false;
 }
 
@@ -192,7 +194,7 @@ void s21::CalculatorModel::HandleClosingBrace(size_t &index) {
   ++index;
   while (StackOfOperatorsIsNotEmpty() &&
          stack_of_operators_.top().GetName() != Lexem::kOpenBrace) {
-      MoveOperatorsFromStackToVector();
+    MoveOperatorsFromStackToVector();
   }
   if (StackOfOperatorsIsNotEmpty() &&
       stack_of_operators_.top().GetName() == Lexem::kOpenBrace) {
@@ -211,7 +213,7 @@ void s21::CalculatorModel::HandleOperator(size_t &index) {
         stack_of_operators_.top().GetName() == Lexem::kDeg) {
       break;
     }
-      MoveOperatorsFromStackToVector();
+    MoveOperatorsFromStackToVector();
   }
   stack_of_operators_.emplace(LexemType::kTypeOperator, handling_operator);
   expect_unary_operator_ = true;
