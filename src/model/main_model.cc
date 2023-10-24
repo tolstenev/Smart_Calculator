@@ -41,6 +41,8 @@ void s21::CalculatorModel::Calculate(const std::string &expression) {
       ConvertExpressionToPostfix();
       CalculateExpression();
       ConvertResultToString();
+    } else {
+      result_string_ = "Error";
     }
   } catch (...) {
     result_string_ = "Error";
