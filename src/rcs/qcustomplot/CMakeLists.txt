@@ -38,7 +38,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "Project \"${PROJECT_NAME}\" compiled with C++ standard ${CMAKE_CXX_STANDARD}")
 
 # Configure file project - File containing macro that can be used in project
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/config.h")
+configure_file("config.h.in" "config.h")
 
 # Find Qt packages
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
@@ -49,13 +49,13 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS PrintSupport REQUIRED)
 
 # Manage library files
 set(PROJECT_HEADERS
-    config.h
+        config.h
 
-    qcustomplot.h
+        qcustomplot.h
 )
 
 set(PROJECT_SOURCES
-    qcustomplot.cpp
+        qcustomplot.cpp
 )
 
 set(PROJECT_UI
@@ -107,4 +107,4 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE QCUSTOMPLOT_COMPILE_LIBRARY)
 # endif()
 
 # Directories to includes
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC .)
